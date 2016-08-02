@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/webservice_result"
+              android:orientation="vertical"
+              tools:context="com.xee.demo.fragments.WebServicesResultFragment">
+
+    <EditText
+        android:id="@+id/webservice_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/webservice_result"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:inputType="textMultiLine|textNoSuggestions|none"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textSize="12sp"
+        android:textColor="#146eff"
+        />
+
+    <EditText
+        android:id="@+id/webservice_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/webservice_result"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:inputType="textMultiLine|textNoSuggestions|none"
+        android:padding="16dp"
+        android:textSize="12sp"
+        />
+
+</LinearLayout>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="prompt_dialog_title">Identifier</string>
+    <string name="prompt_dialog_hint">enter the id to check</string>
+</resources>

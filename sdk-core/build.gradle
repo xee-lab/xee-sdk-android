@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = "${SDK_GROUP}"
+version = "${SDK_VERSION}"
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 24
+        versionCode 1
+        versionName "${SDK_VERSION}"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+    }
+    publishNonDefault true
+    defaultPublishConfig "release"
+}
+
+android.libraryVariants.all { variant ->
+    if (android.publishNonDefault && variant.name == android.defaultPublishConfig) {
+        def bundleTask = tasks["bundle${name.capitalize()}"]
+        artifacts {
+            archives(bundleTask.archivePath) {
+                classifier null
+                builtBy bundleTask
+            }
+        }
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0'
+
+    compile 'com.google.code.gson:gson:2.6.2'
+
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile "com.android.support:support-annotations:${ANDROID_LIB_VERSION}"
+}

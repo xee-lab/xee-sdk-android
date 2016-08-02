@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="InvalidPackage">
+        <ignore regexp="okio-1.6.0.jar"/>
+        <ignore regexp="retrofit-2.0.2.jar" />
+    </issue>
+    <issue id="AllowBackup">
+        <ignore path="*"/>
+    </issue>
+    <issue id="NewApi">
+        <ignore path="*"/>
+    </issue>
+</lint>

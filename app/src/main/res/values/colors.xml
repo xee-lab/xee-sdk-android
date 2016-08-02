@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#ff4800</color>
+    <color name="background">#CCCCCC</color>
+    <color name="webservice_result">#EFEFEF</color>
+    <color name="cell_divider">#EEEEEE</color>
+    <color name="cell_bg_pressed">@color/colorAccent</color>
+    <color name="cell_title">#222222</color>
+    <color name="cell_title_pressed">#ffffff</color>
+
+    <color name="cell_webservice_header_bg">@color/colorPrimary</color>
+    <color name="cell_webservice_header">#b3ffffff</color>
+
+    <color name="webservice_success">#138c00</color>
+    <color name="webservice_error">#FF0000</color>
+</resources>

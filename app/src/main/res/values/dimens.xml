@@ -1,0 +1,18 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="cell_square_cover">56dp</dimen> <!-- 8dp top and 8dp bottom of cell height -->
+    <dimen name="cell_square_cover_margin_horizontal">16dp</dimen>
+    <dimen name="recycler_view_cell">50dp</dimen>
+    <dimen name="recycler_view_cell_text_title">14sp</dimen>
+    <dimen name="recycler_view_cell_padding">10dp</dimen>
+
+
+    <dimen name="cell_webservice_header">36dp</dimen>
+    <dimen name="cell_webservice_header_padding">10dp</dimen>
+    <dimen name="cell_webservice">@dimen/recycler_view_cell</dimen>
+
+    <dimen name="dialog_prompt_padding">20dp</dimen>
+</resources>

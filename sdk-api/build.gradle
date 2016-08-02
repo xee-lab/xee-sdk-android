@@ -1,0 +1,94 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = "${SDK_GROUP}"
+version = "${SDK_VERSION}"
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 24
+        versionCode 1
+        versionName "${SDK_VERSION}"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles fileTree('proguard').asList().toArray()
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+    productFlavors {
+        network {}
+        mock {}
+    }
+    publishNonDefault true
+    defaultPublishConfig "networkRelease"
+}
+
+// Publish default flavour as main artifact, otherwise the maven pom is not generated
+if (android.productFlavors.size() > 0) {
+    android.libraryVariants.all { variant ->
+        if (android.publishNonDefault && variant.name == android.defaultPublishConfig) {
+            def bundleTask = tasks["bundle${name.capitalize()}"]
+            artifacts {
+                archives(bundleTask.archivePath) {
+                    classifier null
+                    builtBy bundleTask
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+
+    debugCompile project(path: ':sdk-core', configuration: 'debug')
+    releaseCompile project(path: ':sdk-core', configuration: 'release')
+
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+
+    compile "com.android.support:support-annotations:${ANDROID_LIB_VERSION}"
+    compile "com.android.support:support-v4:${ANDROID_LIB_VERSION}"
+    compile "com.android.support:appcompat-v7:${ANDROID_LIB_VERSION}"
+}
+
+evaluationDependsOn(':sdk-core')
+configurations {
+    javadocDeps
+}
+def exportedProjects = [':sdk-core', ':sdk-api']
+task javadoc(type: Javadoc) {
+    source exportedProjects.collect { project(it).android.sourceSets.main.java.srcDirs }
+    ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+
+    classpath = files(exportedProjects.collect {
+        project(it).android.getBootClasspath().join(File.pathSeparator)
+    }) + files(ext.androidJar)
+
+    options {
+        linksOffline "http://developer.android.com/reference", "${android.sdkDirectory}/docs/reference"
+        links "http://docs.oracle.com/javase/7/docs/api/"
+    }
+
+    exclude "**/internal/**"
+    exclude "**/BuildConfig.java"
+    exclude "**/R.java"
+
+    destinationDir = file("./javadoc/")
+}
