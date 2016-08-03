@@ -84,7 +84,7 @@ xeeApi.connect(new ConnectionCallback(){
 
 ### Use the API
 
-All methods return a `XeeRequest` which allow you to do synchronous or asynchronous requests.
+All methods return a `XeeRequest` which allows you to do synchronous or asynchronous requests.
 
 The *synchronous* way works like this:
 
@@ -120,7 +120,7 @@ fooRequest.enqueue(new XeeRequest.Callback<T>(){
 
 #### Get user information
 
-```{code}
+```java
 xeeApi.getUser()
    .enqueue(new XeeRequest.Callback<User>() {
        @Override
@@ -137,7 +137,7 @@ xeeApi.getUser()
 
 #### Get the cars of the user
 
-```{code}
+```java
 xeeApi.getCars()
    .enqueue(new XeeRequest.Callback<List<Car>>() {
        @Override
@@ -154,7 +154,7 @@ xeeApi.getCars()
 
 #### Get the trips of the car
 
-```{code}
+```java
 xeeApi.getTrips(carId, beginDate, endDate)
    .enqueue(new XeeRequest.Callback<List<Trip>>() {
        @Override
