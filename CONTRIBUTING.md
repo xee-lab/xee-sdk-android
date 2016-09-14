@@ -2,26 +2,31 @@
 
 When contributing to this repository, please: 
 
-1. **Discuss** the change you wish to make via an **issue** with the owners of this repository **before making a change**.
+1. **Discuss** the change you wish to make via an **issue** with the owners of this repository **before making any change**.
 2. [**Fork**](https://help.github.com/articles/fork-a-repo/) the repository _(if not already done)_
 3. Do the work in a specific branch of your repository
-4. Once the work is done, please [rebase your work](https://git-scm.com/docs/git-rebase) onto the last version of **master of the _original_ repository**
-5. Do a pull request and wait for the owners of this repository to accept it and merge it.
+4. Once the work is done, please [rebase your work](https://git-scm.com/docs/git-rebase) onto the last version of **develop** of the _original_ repository
+5. Do a **pull request** and wait for the owners of this repository to accept/discuss it and merge it.
 
 ## Issue process
 
-First of all, [fill an issue]().
+First of all, [fill an issue](https://github.com/xee-lab/xee-sdk-android/issues/new).
 
 The issue **must** follow this guidelines:
 
 |Field|Guidelines|
 |---|---|
-|name|Pattern should be like `[Group] Issue title`*|
+|name|Pattern should be like `[Group] Issue title`|
 |description|Content should be as **complete as possible** !\*\*|
 
-\* The _group_ can be one of these items : `Doc`, `Example`, `Code`
+The _GROUP_ can be one of these items : 
 
-_For example: `[Doc] Typo in Readme` or `[Code] Trip parser fails in some cases`_ 
+* `FEAT` Related to a new **feature** (enhancement)
+* `FIX` Related to a **bug** fix in the project
+* `MISC` Related to something **about** the project, not a feature not a bug
+* `DOC` Related to **documentation** about something
+
+_For example: `[DOC] Typo in Readme` or `[FIX] Trip parser fails in some cases`_ 
 
 \** Feel free to add pieces of `code` or [links]() to the problematic file. Even screenshots if you think it could be useful.
 
@@ -29,12 +34,12 @@ _For example: `[Doc] Typo in Readme` or `[Code] Trip parser fails in some cases`
 
 ## Fork/Branch process
 
-> If you want to fix the issue by yourself, please tell us in the issue
+> If you want to fix the issue by yourself, please tell us in the conversation
 
 Once accepted, if you didn't already fork the repository, please do it.
 
-1. Rebase **your master** branch to the last state of the _original_ repository **master**  branch
-2. Create a branch from this one. 
+1. Update **your develop** branch to the last state of the _original_ repository **develop**  branch
+2. Create a branch from this one. `git checkout -b your_branch`
 3. [Do it !](http://i.giphy.com/87xihBthJ1DkA.gif)
 
 ![Fork branch tree](res/fork_branch.png)
@@ -62,7 +67,7 @@ Once done, please _push_ the rebased work on your fork!
 ## Pull Request Process
 
 Everything is done properly.
-Please make a [pull request](https://help.github.com/articles/using-pull-requests/) from your branch to our **master** branch.
+Please make a [pull request](https://help.github.com/articles/using-pull-requests/) from your branch to our **develop** branch.
 
 The PR **must** follow this guidelines:
 
@@ -71,8 +76,6 @@ The PR **must** follow this guidelines:
 |name|`Fixes #issue : issue title`|
 |description|What have been done to resolve the issue|
 
-_For example: `Fixes #1 : [Doc] Add images in CONTRIBUTING file`_ 
+_For example: `Fixes #1 : [DOC] Add images in CONTRIBUTING file`_ 
 
 ![Pull request example](res/pr.png)
-
-> Please note that we'll analyse the work and _might not merge it into master_ but may be in a _develop_ branch for a **future release** if it's more a feature than a fix.
