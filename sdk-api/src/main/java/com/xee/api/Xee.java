@@ -76,7 +76,7 @@ public class Xee {
     public static final String ROUTE_BASE = "https://%s.xee.com/v3/";
 
     private static final String TAG = "Xee";
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssSZ";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final Converter.Factory CONVERTER_FACTORY = GsonConverterFactory
             .create(new GsonBuilder().setDateFormat(DATE_FORMAT).create());
     public static final SimpleDateFormat DATE_FORMATTER =
