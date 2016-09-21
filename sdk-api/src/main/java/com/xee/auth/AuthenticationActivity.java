@@ -124,8 +124,7 @@ public final class AuthenticationActivity extends AppCompatActivity {
         @Override
         @TargetApi(Build.VERSION_CODES.N)
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            return doesUrlContainsCode(view, request.getUrl()
-                                                    .getPath());
+            return doesUrlContainsCode(view, request.getUrl().toString());
         }
 
         /**
