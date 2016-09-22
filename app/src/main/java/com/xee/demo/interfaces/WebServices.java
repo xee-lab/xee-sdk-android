@@ -38,7 +38,10 @@ public class WebServices {
         TRIPS("TRIPS", true),
         GET_TRIP("Get trip"),
         GET_TRIP_LOCATIONS("Get trip locations"),
-        GET_TRIP_SIGNALS("Get trip signals");
+        GET_TRIP_SIGNALS("Get trip signals"),
+        GET_TRIP_STATS("Get trip stats"),
+        GET_TRIP_MILEAGE("Get trip mileage"),
+        GET_TRIP_USED_TIME("Get trip used time");
 
         private boolean isHeader;
         private String name;

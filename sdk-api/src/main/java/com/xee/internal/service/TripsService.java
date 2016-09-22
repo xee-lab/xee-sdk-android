@@ -18,6 +18,7 @@ package com.xee.internal.service;
 
 import com.xee.api.entity.Location;
 import com.xee.api.entity.Signal;
+import com.xee.api.entity.Stat;
 import com.xee.api.entity.Trip;
 
 import java.util.List;
@@ -34,6 +35,9 @@ public interface TripsService {
         public static final String TRIP = "trips/{" + Parameters.TRIP_ID + "}";
         public static final String LOCATIONS = "trips/{" + Parameters.TRIP_ID + "}/locations";
         public static final String SIGNALS = "trips/{" + Parameters.TRIP_ID + "}/signals";
+        public static final String STATS = "trips/{" + Parameters.TRIP_ID + "}/stats";
+        public static final String MILEAGE = "trips/{" + Parameters.TRIP_ID + "}/stats/mileage";
+        public static final String USED_TIME = "trips/{" + Parameters.TRIP_ID + "}/stats/usedtime";
     }
 
     final class Parameters {
@@ -50,5 +54,14 @@ public interface TripsService {
 
     @GET(Routes.SIGNALS)
     Call<List<Signal>> getSignals(@Path(Parameters.TRIP_ID) String tripId, @QueryMap Map<String, String> options);
+
+    @GET(Routes.STATS)
+    Call<List<Stat>> getStats(@Path(Parameters.TRIP_ID) String tripId);
+
+    @GET(Routes.MILEAGE)
+    Call<Stat<Double>> getMileage(@Path(Parameters.TRIP_ID) String tripId);
+
+    @GET(Routes.USED_TIME)
+    Call<Stat<Long>> getUsedTime(@Path(Parameters.TRIP_ID) String tripId);
 
 }

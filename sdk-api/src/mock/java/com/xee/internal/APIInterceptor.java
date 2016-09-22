@@ -70,6 +70,12 @@ public class APIInterceptor implements Interceptor {
             response = getLocations();
         } else if (path.equals(path(TripsService.Routes.SIGNALS.replace("{" + TripsService.Parameters.TRIP_ID + "}", "56b43a4f051f29071f14218d")))) {
             response = getSignals();
+        } else if (path.equals(path(TripsService.Routes.STATS.replace("{" + TripsService.Parameters.TRIP_ID + "}", "56b43a4f051f29071f14218d")))) {
+            response = getTripStats();
+        } else if (path.equals(path(TripsService.Routes.MILEAGE.replace("{" + TripsService.Parameters.TRIP_ID + "}", "56b43a4f051f29071f14218d")))) {
+            response = getTripMileage();
+        } else if (path.equals(path(TripsService.Routes.USED_TIME.replace("{" + TripsService.Parameters.TRIP_ID + "}", "56b43a4f051f29071f14218d")))) {
+            response = getTripUsedTime();
         } else if (path.equals(path(AuthService.Routes.ACCESS_TOKEN))) {
             response = getToken();
         } else if (path.equals(path(CarsService.Routes.MILEAGE.replace("{" + CarsService.Parameters.CAR_ID + "}", "1337")))) {
@@ -262,6 +268,30 @@ public class APIInterceptor implements Interceptor {
         Map<String, Object> response = new HashMap<>();
         response.put("beginDate", "2016-07-01T00:00:00Z");
         response.put("endDate", "2016-07-15T12:34:30.447653854Z");
+        response.put("type", "USED_TIME");
+        response.put("value", 4200);
+        return json(response);
+    }
+
+    private String getTripStats() {
+        Map<String, Object> response1 = new HashMap<>();
+        response1.put("type", "MILEAGE");
+        response1.put("value", 4.2);
+        Map<String, Object> response2 = new HashMap<>();
+        response2.put("type", "USED_TIME");
+        response2.put("value", 4200);
+        return json(Arrays.asList(response1, response2));
+    }
+
+    private String getTripMileage() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("type", "MILEAGE");
+        response.put("value", 4.2);
+        return json(response);
+    }
+
+    private String getTripUsedTime() {
+        Map<String, Object> response = new HashMap<>();
         response.put("type", "USED_TIME");
         response.put("value", 4200);
         return json(response);

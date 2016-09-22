@@ -22,11 +22,10 @@ import com.xee.BuildConfig;
 import com.xee.api.Xee;
 import com.xee.api.entity.Location;
 import com.xee.api.entity.Signal;
+import com.xee.api.entity.Stat;
 import com.xee.api.entity.Trip;
 import com.xee.core.ErrorUtils;
-import com.xee.core.XeeRequest;
 import com.xee.internal.APIInterceptor;
-import com.xee.internal.service.CarsService;
 import com.xee.internal.service.TripsService;
 
 import org.hamcrest.Matchers;
@@ -35,7 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ import static org.hamcrest.Matchers.hasSize;
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 public class TestTripsService {
 
@@ -157,6 +156,66 @@ public class TestTripsService {
                 collector.checkThat("contains odometer", xeeRequest.body(), hasItem(
                         Matchers.<Signal>allOf(hasProperty("name", is(Signal.Name.ODOMETER.name)), hasProperty("value", is(34512.1)))
                 ));
+            } else {
+                collector.addError(ErrorUtils.parseError(xeeRequest.errorBody().string()));
+            }
+        } catch (IOException e) {
+            collector.addError(e);
+        }
+    }
+
+    @Test
+    public void getStats() {
+        try {
+            Response<List<Stat>> xeeRequest = tripsService.getStats("56b43a4f051f29071f14218d").execute();
+            if (xeeRequest.isSuccessful()) {
+
+                collector.checkThat("no error", xeeRequest.errorBody(), nullValue());
+                collector.checkThat("item", xeeRequest.body(), notNullValue());
+
+                collector.checkThat("size", xeeRequest.body().size(), is(2));
+
+                collector.checkThat("type", xeeRequest.body().get(0).getType(), is("MILEAGE"));
+                collector.checkThat("value", (Double) xeeRequest.body().get(0).getValue(), is(4.2d));
+
+                collector.checkThat("type", xeeRequest.body().get(1).getType(), is("USED_TIME"));
+                collector.checkThat("value", (Double) xeeRequest.body().get(1).getValue(), is(4200d));
+            } else {
+                collector.addError(ErrorUtils.parseError(xeeRequest.errorBody().string()));
+            }
+        } catch (IOException e) {
+            collector.addError(e);
+        }
+    }
+
+    @Test
+    public void getMileage() {
+        try {
+            Response<Stat<Double>> xeeRequest = tripsService.getMileage("56b43a4f051f29071f14218d").execute();
+            if (xeeRequest.isSuccessful()) {
+                collector.checkThat("no error", xeeRequest.errorBody(), nullValue());
+                collector.checkThat("xeeRequest", xeeRequest.body(), notNullValue());
+
+                collector.checkThat("type", xeeRequest.body().getType(), is("MILEAGE"));
+                collector.checkThat("value", xeeRequest.body().getValue(), is(4.2d));
+            } else {
+                collector.addError(ErrorUtils.parseError(xeeRequest.errorBody().string()));
+            }
+        } catch (IOException e) {
+            collector.addError(e);
+        }
+    }
+
+    @Test
+    public void getUsedTime() {
+        try {
+            Response<Stat<Long>> xeeRequest = tripsService.getUsedTime("56b43a4f051f29071f14218d").execute();
+            if (xeeRequest.isSuccessful()) {
+                collector.checkThat("no error", xeeRequest.errorBody(), nullValue());
+                collector.checkThat("xeeRequest", xeeRequest.body(), notNullValue());
+
+                collector.checkThat("type", xeeRequest.body().getType(), is("USED_TIME"));
+                collector.checkThat("value", xeeRequest.body().getValue(), is(4200L));
             } else {
                 collector.addError(ErrorUtils.parseError(xeeRequest.errorBody().string()));
             }
