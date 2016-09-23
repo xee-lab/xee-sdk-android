@@ -3,7 +3,6 @@
 
     <application>
         <activity
-            android:name="com.xee.auth.AuthenticationActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:name="com.xee.auth.AuthenticationActivity" />
     </application>
 </manifest>

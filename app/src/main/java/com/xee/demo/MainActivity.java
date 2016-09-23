@@ -361,7 +361,6 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
                 });
                 break;
 
-
             case GET_TRIP_SIGNALS:
                 showPromptDialog(ws.getName(), new PromptDialog() {
                     @Override
@@ -381,6 +380,64 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
                     }
                 });
                 break;
+
+            case GET_TRIP_STATS:
+                showPromptDialog(ws.getName(), new PromptDialog() {
+                    @Override
+                    public void onInput(String id) {
+                        xeeApi.getTripStats(id).enqueue(new XeeRequest.Callback<List<Stat>>() {
+                            @Override
+                            public void onSuccess(List<Stat> response) {
+                                showResult(ws.getName(), response, true);
+                            }
+
+                            @Override
+                            public void onError(Error error) {
+                                showResult(ws.getName(), error, false);
+                            }
+                        });
+                    }
+                });
+                break;
+
+            case GET_TRIP_MILEAGE:
+                showPromptDialog(ws.getName(), new PromptDialog() {
+                    @Override
+                    public void onInput(String id) {
+                        xeeApi.getTripMileage(id).enqueue(new XeeRequest.Callback<Stat<Double>>() {
+                            @Override
+                            public void onSuccess(Stat<Double> response) {
+                                showResult(ws.getName(), response, true);
+                            }
+
+                            @Override
+                            public void onError(Error error) {
+                                showResult(ws.getName(), error, false);
+                            }
+                        });
+                    }
+                });
+                break;
+
+            case GET_TRIP_USED_TIME:
+                showPromptDialog(ws.getName(), new PromptDialog() {
+                    @Override
+                    public void onInput(String id) {
+                        xeeApi.getTripUsedTime(id).enqueue(new XeeRequest.Callback<Stat<Long>>() {
+                            @Override
+                            public void onSuccess(Stat<Long> response) {
+                                showResult(ws.getName(), response, true);
+                            }
+
+                            @Override
+                            public void onError(Error error) {
+                                showResult(ws.getName(), error, false);
+                            }
+                        });
+                    }
+                });
+                break;
+
             //endregion
         }
     }

@@ -1,5 +1,9 @@
 # xee-sdk-android
 
+[![Build Status](https://api.travis-ci.org/xee-lab/xee-sdk-android.svg?branch=master)](https://travis-ci.org/xee-lab/xee-sdk-android)
+[![Release 3.0.1](https://img.shields.io/badge/Version-3.0.1-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.0.1)
+[![License Apache](https://img.shields.io/badge/License-Apache%202-blue.svg)](./LICENSE)
+
 ## Purpose
 
 This SDK make easier the usage of [Xee API](https://dev.xee.com/) on [Android devices](https://developer.android.com) !
@@ -29,8 +33,8 @@ Then, where you need the API SDK, just add it to the dependencies in the **modul
 
 ```groovy
 dependencies {
-    compile 'com.github.xee-lab.xee-sdk-android:sdk-core:3.0.0'
-    compile 'com.github.xee-lab.xee-sdk-android:sdk-api:3.0.0'
+    compile 'com.github.xee-lab.xee-sdk-android:sdk-core:3.0.1'
+    compile 'com.github.xee-lab.xee-sdk-android:sdk-api:3.0.1'
 }
 ```
 

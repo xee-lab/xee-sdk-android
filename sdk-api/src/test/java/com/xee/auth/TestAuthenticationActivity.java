@@ -19,10 +19,10 @@ package com.xee.auth;
 import android.app.Activity;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-
 
 import com.xee.BuildConfig;
 import com.xee.api.Xee;
@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -43,7 +43,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.robolectric.Shadows.shadowOf;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 public class TestAuthenticationActivity {
 
@@ -81,9 +81,11 @@ public class TestAuthenticationActivity {
                 .buildActivity(AuthenticationActivity.class)
                 .withIntent(AuthenticationActivity.intent(RuntimeEnvironment.application, new OAuth2Client("fake_client", "fake_secret", "fake_redirect"), "cloud"))
                 .create()
+                .start()
                 .get();
 
         View view = ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
+        Log.d("", "authenticationWebsite: " + view);
         collector.checkThat("content is webview", view, is(instanceOf(WebView.class)));
     }
 }
