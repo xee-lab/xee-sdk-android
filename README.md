@@ -1,5 +1,9 @@
 # xee-sdk-android
 
+[![Build Status](https://api.travis-ci.org/xee-lab/xee-sdk-android.svg?branch=master)](https://travis-ci.org/xee-lab/xee-sdk-android)
+[![Release 3.0.0](https://img.shields.io/badge/Version-3.0.0-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.0.0)
+[![License Apache](https://img.shields.io/badge/License-Apache%202-blue.svg)](./LICENSE)
+
 ## Purpose
 
 This SDK make easier the usage of [Xee API](https://dev.xee.com/) on [Android devices](https://developer.android.com) !

@@ -24,9 +24,9 @@ public class Signal<T> {
 
     public enum Name {
 
-        HIGH_BEAMS("HighBeamsSts"),
-        LOW_BEAMS("LowBeamsSts"),
-        HEAD_LIGHTS("HeadLightsSts"),
+        HIGH_BEAMS("HighBeamSts"),
+        LOW_BEAMS("LowBeamSts"),
+        HEAD_LIGHTS("HeadLightSts"),
         HAZARD("HazardSts"),
         LEFT_INDICATOR("LeftIndicatorSts"),
         RIGHT_INDICATOR("RightIndicatorSts"),
