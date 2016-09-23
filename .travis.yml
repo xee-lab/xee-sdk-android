@@ -9,5 +9,6 @@ android:
         - android-24
         # Additional components
         - extra-android-support
+        - extra-android-m2repository
 # command to run tests
 script: make test
