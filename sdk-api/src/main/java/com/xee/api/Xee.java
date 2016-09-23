@@ -621,5 +621,47 @@ public class Xee {
         return new XeeRequest<>(tripsService.getSignals(tripId, options));
     }
 
+    /**
+     * Get the statistics a specific trip
+     *
+     * @param tripId the id of the trip you are looking for the stats
+     * @return a {@code XeeRequest<Stat>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/trips/trip_id/stats.md" target="_blank">Trip stats API</a>
+     */
+    public XeeRequest<List<Stat>> getTripStats(@NonNull String tripId) {
+        if (tripsService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        return new XeeRequest<>(tripsService.getStats(tripId));
+    }
+
+    /**
+     * Get the mileage value for a specific trip
+     *
+     * @param tripId the id of the trip you are looking for the mileage
+     * @return a {@code XeeRequest<Stat>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/trips/trip_id/stats/mileage.md" target="_blank">Trip mileage API</a>
+     */
+    public XeeRequest<Stat<Double>> getTripMileage(@NonNull String tripId) {
+        if (tripsService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        return new XeeRequest<>(tripsService.getMileage(tripId));
+    }
+
+    /**
+     * Get the used time value for a specific trip
+     *
+     * @param tripId the id of the trip you are looking for the used time
+     * @return a {@code XeeRequest<Stat>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/trips/trip_id/stats/usedtime.md" target="_blank">Trip used time API</a>
+     */
+    public XeeRequest<Stat<Long>> getTripUsedTime(@NonNull String tripId) {
+        if (tripsService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        return new XeeRequest<>(tripsService.getUsedTime(tripId));
+    }
+
     //endregion
 }
