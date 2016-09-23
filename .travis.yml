@@ -1,0 +1,18 @@
+language: android
+
+jdk:
+ - oraclejdk8
+
+android:
+    components:
+        - platform-tools
+        - tools
+        # The BuildTools version used by your project
+        - build-tools-24.0.1
+        # The SDK version used to compile your project
+        - android-24
+        # Additional components
+        - extra-android-support
+        - extra-android-m2repository
+# command to run tests
+script: make test
