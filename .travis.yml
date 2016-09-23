@@ -1,0 +1,11 @@
+language: android
+android:
+    components:
+        # The BuildTools version used by your project
+        - build-tools-24.0.2
+        # The SDK version used to compile your project
+        - android-24
+        # Additional components
+        - extra-android-support
+# command to run tests
+script: make test
