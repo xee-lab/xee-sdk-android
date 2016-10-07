@@ -18,7 +18,7 @@ Our SDK is built over [jitpack.io](https://jitpack.io).
 
 In order to use this SDK, please do the following:
 
-Add this to you **root project** `build.gradle`
+Add this to your **root project** `build.gradle`
 
 ```groovy
 repositories {
@@ -29,7 +29,7 @@ repositories {
 }
 ```
 
-Then, where you need the API SDK, just add it to the dependencies in the **module** `build.gradle`
+Then just add it to the dependencies in the `build.gradle`  **module** wherever you need the SDK API.
 
 ```groovy
 dependencies {
