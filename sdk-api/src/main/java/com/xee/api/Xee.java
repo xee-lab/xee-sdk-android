@@ -25,6 +25,13 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.xee.BuildConfig;
 import com.xee.api.entity.Car;
 import com.xee.api.entity.Location;
@@ -48,6 +55,8 @@ import com.xee.internal.service.TripsService;
 import com.xee.internal.service.UsersService;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,6 +65,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
@@ -76,15 +86,14 @@ public class Xee {
     public static final String ROUTE_BASE = "https://%s.xee.com/v3/";
 
     private static final String TAG = "Xee";
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static final Converter.Factory CONVERTER_FACTORY = GsonConverterFactory
-            .create(new GsonBuilder().setDateFormat(DATE_FORMAT).create());
-    public static final SimpleDateFormat DATE_FORMATTER =
-            new SimpleDateFormat(DATE_FORMAT, Locale.US);
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    public static final Converter.Factory CONVERTER_FACTORY = GsonConverterFactory.create(new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create());
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT, Locale.US);
     private static final LogRequestInterceptor LOG_INTERCEPTOR = new LogRequestInterceptor();
 
-    private static final IllegalStateException CONNECTION_EXCEPTION =
-            new IllegalStateException("You must connect the user before anything");
+    @SuppressWarnings("ThrowableInstanceNeverThrown")
+    private static final IllegalStateException CONNECTION_EXCEPTION = new IllegalStateException("You must connect the user before anything");
 
     private XeeEnv xeeEnv;
 
@@ -92,6 +101,27 @@ public class Xee {
     private UsersService usersService;
     private CarsService carsService;
     private TripsService tripsService;
+
+    private static class DateDeserializer implements JsonSerializer<Date>, JsonDeserializer<Date> {
+
+        @Override
+        public synchronized JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {
+            return new JsonPrimitive(DATE_FORMATTER.format(date));
+        }
+
+        @Override
+        public synchronized Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
+            final String date = element.getAsString();
+            SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            try {
+                return formatter.parse(date);
+            } catch (ParseException e) {
+                return null;
+            }
+        }
+    }
 
     /**
      * Creates a Xee instance
