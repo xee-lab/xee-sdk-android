@@ -102,6 +102,9 @@ public class Xee {
     private CarsService carsService;
     private TripsService tripsService;
 
+    /**
+     * Allows to serialize and deserialize a Date and format it
+     */
     private static class DateDeserializer implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
         @Override
@@ -118,6 +121,9 @@ public class Xee {
             try {
                 return formatter.parse(date);
             } catch (ParseException e) {
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "Date deserialization error: ", e);
+                }
                 return null;
             }
         }
