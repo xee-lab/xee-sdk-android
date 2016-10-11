@@ -86,7 +86,8 @@ public class Xee {
     public static final String ROUTE_BASE = "https://%s.xee.com/v3/";
 
     private static final String TAG = "Xee";
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String DATE_FORMAT_WITH_MS = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static final Converter.Factory CONVERTER_FACTORY = GsonConverterFactory.create(new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create());
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT, Locale.US);
@@ -121,8 +122,14 @@ public class Xee {
             try {
                 return formatter.parse(date);
             } catch (ParseException e) {
-                if (BuildConfig.DEBUG) {
-                    Log.e(TAG, "Date deserialization error: ", e);
+                try {
+                    // if date parsed has failed with the default format, then try with the second one
+                    formatter = new SimpleDateFormat(DATE_FORMAT_WITH_MS, Locale.US);
+                    return formatter.parse(date);
+                } catch (ParseException error) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "Date deserialization error: ", e);
+                    }
                 }
                 return null;
             }
