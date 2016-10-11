@@ -173,6 +173,10 @@ xeeApi.getTrips(carId, beginDate, endDate)
    });
 ```
 
+## Parcelable entity
+
+All entities from the SDK implement the `Parcelable` interface, making easier the way to pass data between your components
+
 ## Example
 
 We provide a [demo app](app) that shows how the SDK might be used
