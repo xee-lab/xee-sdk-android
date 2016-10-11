@@ -137,7 +137,10 @@ public class Xee {
     public Xee(final XeeEnv environment) {
         this.xeeEnv = environment;
 
-        initAuthServices(environment);
+        // if user has set the SANDBOX environment, then no need to deal with OAuth
+        if (this.xeeEnv != null && !this.xeeEnv.environment.equals(XeeEnv.SANDBOX)) {
+            initAuthServices(environment);
+        }
     }
 
     /**
@@ -196,12 +199,17 @@ public class Xee {
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
-                        Token token = xeeEnv.tokenStorage.get();
-                        // If the code reach this part, the token exists ! so assert it is not null
-                        assert token != null;
-                        Request.Builder requestBuilder = chain.request().newBuilder()
-                                                              .header("Authorization", "Bearer " + token.getAccessToken());
-                        return chain.proceed(requestBuilder.build());
+                        // if user has set the SANDBOX environment, then no need to deal with token
+                        if (xeeEnv != null && xeeEnv.environment.equals(XeeEnv.SANDBOX)) {
+                            return chain.proceed(chain.request());
+                        } else {
+                            Token token = xeeEnv.tokenStorage.get();
+                            // If the code reach this part, the token exists ! so assert it is not null
+                            assert token != null;
+                            Request.Builder requestBuilder = chain.request().newBuilder()
+                                                                  .header("Authorization", "Bearer " + token.getAccessToken());
+                            return chain.proceed(requestBuilder.build());
+                        }
                     }
                 })
                 .addInterceptor(new APIInterceptor())
@@ -238,6 +246,14 @@ public class Xee {
 
     @UiThread
     public void connect(@NonNull final ConnectionCallback connectionCallback) {
+
+        // check if user has set the SANDBOX environment, then auto-connect the user
+        if (xeeEnv != null && xeeEnv.environment.equals(XeeEnv.SANDBOX)) {
+            initApiServices();
+            connectionCallback.onSuccess();
+            return;
+        }
+
         // Get the storage util
         // Retrieve last token from storage
         Token currentToken = xeeEnv.tokenStorage.get();
