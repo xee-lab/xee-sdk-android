@@ -77,7 +77,7 @@ public final class XeeRequest<T> {
             } else {
                 return new Response(null, ErrorUtils.parseError(tResponse.errorBody().string()));
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new Response(null, new Error(e));
         }
     }
