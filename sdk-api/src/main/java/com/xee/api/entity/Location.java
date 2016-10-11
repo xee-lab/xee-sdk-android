@@ -16,11 +16,14 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class Location  {
+public class Location implements Parcelable {
 
     @SerializedName("latitude")
     private double latitude;
@@ -34,6 +37,9 @@ public class Location  {
     private int satellites;
     @SerializedName("date")
     private Date date;
+
+    public Location() {
+    }
 
     public double getLatitude() {
         return latitude;
@@ -127,4 +133,41 @@ public class Location  {
                 ", date=" + date +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(this.latitude);
+        dest.writeDouble(this.longitude);
+        dest.writeDouble(this.altitude);
+        dest.writeDouble(this.heading);
+        dest.writeInt(this.satellites);
+        dest.writeLong(this.date != null ? this.date.getTime() : -1);
+    }
+
+    protected Location(Parcel in) {
+        this.latitude = in.readDouble();
+        this.longitude = in.readDouble();
+        this.altitude = in.readDouble();
+        this.heading = in.readDouble();
+        this.satellites = in.readInt();
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate);
+    }
+
+    public static final Parcelable.Creator<Location> CREATOR = new Parcelable.Creator<Location>() {
+        @Override
+        public Location createFromParcel(Parcel source) {
+            return new Location(source);
+        }
+
+        @Override
+        public Location[] newArray(int size) {
+            return new Location[size];
+        }
+    };
 }

@@ -16,11 +16,16 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
+import com.xee.BuildConfig;
 
 import java.util.Date;
 
-public class Signal<T> {
+public class Signal<T> implements Parcelable {
 
     public enum Name {
 
@@ -67,6 +72,9 @@ public class Signal<T> {
     private T value;
     @SerializedName("date")
     private Date date;
+
+    public Signal() {
+    }
 
     public String getName() {
         return name;
@@ -121,4 +129,42 @@ public class Signal<T> {
                 ", date=" + date +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeValue(this.value);
+        dest.writeLong(this.date != null ? this.date.getTime() : -1);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Signal(Parcel in) {
+        this.name = in.readString();
+        try {
+            this.value = (T) in.readValue(Signal.class.getClassLoader());
+        } catch (Exception e) {
+            if(BuildConfig.DEBUG) {
+                Log.e(Signal.class.getSimpleName(), "Error getting value: ", e);
+            }
+        }
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate);
+    }
+
+    public static final Parcelable.Creator<Signal> CREATOR = new Parcelable.Creator<Signal>() {
+        @Override
+        public Signal createFromParcel(Parcel source) {
+            return new Signal(source);
+        }
+
+        @Override
+        public Signal[] newArray(int size) {
+            return new Signal[size];
+        }
+    };
 }
