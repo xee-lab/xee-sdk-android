@@ -724,4 +724,27 @@ public class Xee {
     }
 
     //endregion
+
+    //region TOKEN
+
+    /**
+     * Set and store a token
+     * <strong>Please note that if a token already exists and is stored, it will be replaced by the new one</strong>
+     *
+     * @param environment the environment to use in order to set the token
+     * @param token       the token to set
+     */
+    public void setToken(@NonNull final XeeEnv environment, @NonNull final Token token) {
+
+        // set the environment
+        xeeEnv = environment;
+
+        // save the given token in storage to use it for any call to the API
+        xeeEnv.tokenStorage.store(token);
+
+        initAuthServices(xeeEnv);
+        initApiServices();
+    }
+
+    //endregion
 }
