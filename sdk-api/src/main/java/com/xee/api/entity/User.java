@@ -16,11 +16,14 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class User {
+public class User implements Parcelable {
 
     @SerializedName("id")
     private int id;
@@ -47,6 +50,9 @@ public class User {
 
     public enum Gender {
         MALE, FEMALE
+    }
+
+    public User() {
     }
 
     public String getId() {
@@ -196,4 +202,55 @@ public class User {
                 ", lastUpdateDate=" + lastUpdateDate +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.lastName);
+        dest.writeString(this.firstName);
+        dest.writeString(this.nickName);
+        dest.writeInt(this.gender == null ? -1 : this.gender.ordinal());
+        dest.writeLong(this.birthDate != null ? this.birthDate.getTime() : -1);
+        dest.writeLong(this.licenceDeliveryDate != null ? this.licenceDeliveryDate.getTime() : -1);
+        dest.writeString(this.role);
+        dest.writeByte(this.isLocationEnabled ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.creationDate != null ? this.creationDate.getTime() : -1);
+        dest.writeLong(this.lastUpdateDate != null ? this.lastUpdateDate.getTime() : -1);
+    }
+
+    protected User(Parcel in) {
+        this.id = in.readInt();
+        this.lastName = in.readString();
+        this.firstName = in.readString();
+        this.nickName = in.readString();
+        int tmpGender = in.readInt();
+        this.gender = tmpGender == -1 ? null : Gender.values()[tmpGender];
+        long tmpBirthDate = in.readLong();
+        this.birthDate = tmpBirthDate == -1 ? null : new Date(tmpBirthDate);
+        long tmpLicenceDeliveryDate = in.readLong();
+        this.licenceDeliveryDate = tmpLicenceDeliveryDate == -1 ? null : new Date(tmpLicenceDeliveryDate);
+        this.role = in.readString();
+        this.isLocationEnabled = in.readByte() != 0;
+        long tmpCreationDate = in.readLong();
+        this.creationDate = tmpCreationDate == -1 ? null : new Date(tmpCreationDate);
+        long tmpLastUpdateDate = in.readLong();
+        this.lastUpdateDate = tmpLastUpdateDate == -1 ? null : new Date(tmpLastUpdateDate);
+    }
+
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

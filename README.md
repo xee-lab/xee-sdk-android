@@ -1,7 +1,7 @@
 # xee-sdk-android
 
 [![Build Status](https://api.travis-ci.org/xee-lab/xee-sdk-android.svg?branch=master)](https://travis-ci.org/xee-lab/xee-sdk-android)
-[![Release 3.0.1](https://img.shields.io/badge/Version-3.0.1-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.0.1)
+[![Release 3.0.2](https://img.shields.io/badge/Version-3.0.2-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.0.2)
 [![License Apache](https://img.shields.io/badge/License-Apache%202-blue.svg)](./LICENSE)
 
 ## Purpose
@@ -33,8 +33,8 @@ Then just add it to the dependencies in the `build.gradle`  **module** wherever 
 
 ```groovy
 dependencies {
-    compile 'com.github.xee-lab.xee-sdk-android:sdk-core:3.0.1'
-    compile 'com.github.xee-lab.xee-sdk-android:sdk-api:3.0.1'
+    compile 'com.github.xee-lab.xee-sdk-android:sdk-core:3.0.2'
+    compile 'com.github.xee-lab.xee-sdk-android:sdk-api:3.0.2'
 }
 ```
 
@@ -172,6 +172,10 @@ xeeApi.getTrips(carId, beginDate, endDate)
        }
    });
 ```
+
+## Parcelable entity
+
+All entities from the SDK implement the `Parcelable` interface, making easier the way to pass data between your components
 
 ## Example
 

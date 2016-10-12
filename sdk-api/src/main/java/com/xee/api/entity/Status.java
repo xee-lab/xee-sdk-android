@@ -16,11 +16,14 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Status {
+public class Status implements Parcelable {
 
     @SerializedName("location")
     private Location location;
@@ -28,6 +31,9 @@ public class Status {
     private Accelerometer accelerometer;
     @SerializedName("signals")
     private List<Signal> signals;
+
+    public Status() {
+    }
 
     public Location getLocation() {
         return location;
@@ -84,4 +90,34 @@ public class Status {
                 ", signals=" + signals +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.location, flags);
+        dest.writeParcelable(this.accelerometer, flags);
+        dest.writeTypedList(this.signals);
+    }
+
+    protected Status(Parcel in) {
+        this.location = in.readParcelable(Location.class.getClassLoader());
+        this.accelerometer = in.readParcelable(Accelerometer.class.getClassLoader());
+        this.signals = in.createTypedArrayList(Signal.CREATOR);
+    }
+
+    public static final Parcelable.Creator<Status> CREATOR = new Parcelable.Creator<Status>() {
+        @Override
+        public Status createFromParcel(Parcel source) {
+            return new Status(source);
+        }
+
+        @Override
+        public Status[] newArray(int size) {
+            return new Status[size];
+        }
+    };
 }

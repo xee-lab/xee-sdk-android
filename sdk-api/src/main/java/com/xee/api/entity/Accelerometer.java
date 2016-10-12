@@ -16,11 +16,14 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class Accelerometer {
+public class Accelerometer implements Parcelable {
 
     @SerializedName("x")
     private double x;
@@ -30,6 +33,9 @@ public class Accelerometer {
     private double z;
     @SerializedName("date")
     private Date date;
+
+    public Accelerometer() {
+    }
 
     public double getX() {
         return x;
@@ -100,4 +106,37 @@ public class Accelerometer {
                 ", date=" + date +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(this.x);
+        dest.writeDouble(this.y);
+        dest.writeDouble(this.z);
+        dest.writeLong(this.date != null ? this.date.getTime() : -1);
+    }
+
+    protected Accelerometer(Parcel in) {
+        this.x = in.readDouble();
+        this.y = in.readDouble();
+        this.z = in.readDouble();
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate);
+    }
+
+    public static final Parcelable.Creator<Accelerometer> CREATOR = new Parcelable.Creator<Accelerometer>() {
+        @Override
+        public Accelerometer createFromParcel(Parcel source) {
+            return new Accelerometer(source);
+        }
+
+        @Override
+        public Accelerometer[] newArray(int size) {
+            return new Accelerometer[size];
+        }
+    };
 }

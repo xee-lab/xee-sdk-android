@@ -16,11 +16,16 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
+import com.xee.BuildConfig;
 
 import java.util.Date;
 
-public class Stat<T> {
+public class Stat<T> implements Parcelable {
 
     @SerializedName("beginDate")
     private Date beginDate;
@@ -30,6 +35,9 @@ public class Stat<T> {
     private String type;
     @SerializedName("value")
     private T value;
+
+    public Stat() {
+    }
 
     public Date getBeginDate() {
         return beginDate;
@@ -96,4 +104,45 @@ public class Stat<T> {
                 ", value=" + value +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.beginDate != null ? this.beginDate.getTime() : -1);
+        dest.writeLong(this.endDate != null ? this.endDate.getTime() : -1);
+        dest.writeString(this.type);
+        dest.writeValue(this.value);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Stat(Parcel in) {
+        long tmpBeginDate = in.readLong();
+        this.beginDate = tmpBeginDate == -1 ? null : new Date(tmpBeginDate);
+        long tmpEndDate = in.readLong();
+        this.endDate = tmpEndDate == -1 ? null : new Date(tmpEndDate);
+        this.type = in.readString();
+        try {
+            this.value = (T) in.readValue(Signal.class.getClassLoader());
+        } catch (Exception e) {
+            if(BuildConfig.DEBUG) {
+                Log.e(Signal.class.getSimpleName(), "Error getting value: ", e);
+            }
+        }
+    }
+
+    public static final Parcelable.Creator<Stat> CREATOR = new Parcelable.Creator<Stat>() {
+        @Override
+        public Stat createFromParcel(Parcel source) {
+            return new Stat(source);
+        }
+
+        @Override
+        public Stat[] newArray(int size) {
+            return new Stat[size];
+        }
+    };
 }

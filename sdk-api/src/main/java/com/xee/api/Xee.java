@@ -25,6 +25,13 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.xee.BuildConfig;
 import com.xee.api.entity.Car;
 import com.xee.api.entity.Location;
@@ -48,6 +55,8 @@ import com.xee.internal.service.TripsService;
 import com.xee.internal.service.UsersService;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,6 +65,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
@@ -76,15 +86,15 @@ public class Xee {
     public static final String ROUTE_BASE = "https://%s.xee.com/v3/";
 
     private static final String TAG = "Xee";
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static final Converter.Factory CONVERTER_FACTORY = GsonConverterFactory
-            .create(new GsonBuilder().setDateFormat(DATE_FORMAT).create());
-    public static final SimpleDateFormat DATE_FORMATTER =
-            new SimpleDateFormat(DATE_FORMAT, Locale.US);
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String DATE_FORMAT_WITH_MS = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    public static final Converter.Factory CONVERTER_FACTORY = GsonConverterFactory.create(new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create());
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT, Locale.US);
     private static final LogRequestInterceptor LOG_INTERCEPTOR = new LogRequestInterceptor();
 
-    private static final IllegalStateException CONNECTION_EXCEPTION =
-            new IllegalStateException("You must connect the user before anything");
+    @SuppressWarnings("ThrowableInstanceNeverThrown")
+    private static final IllegalStateException CONNECTION_EXCEPTION = new IllegalStateException("You must connect the user before anything");
 
     private XeeEnv xeeEnv;
 
@@ -94,6 +104,40 @@ public class Xee {
     private TripsService tripsService;
 
     /**
+     * Allows to serialize and deserialize a Date and format it
+     */
+    private static class DateDeserializer implements JsonSerializer<Date>, JsonDeserializer<Date> {
+
+        @Override
+        public synchronized JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {
+            return new JsonPrimitive(DATE_FORMATTER.format(date));
+        }
+
+        @Override
+        public synchronized Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
+            final String date = element.getAsString();
+            SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            try {
+                return formatter.parse(date);
+            } catch (ParseException e) {
+                try {
+                    // if date parsed has failed with the default format, then try with the second one
+                    formatter = new SimpleDateFormat(DATE_FORMAT_WITH_MS, Locale.US);
+                    formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    return formatter.parse(date);
+                } catch (ParseException error) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "Date deserialization error: ", e);
+                    }
+                }
+                return null;
+            }
+        }
+    }
+
+    /**
      * Creates a Xee instance
      *
      * @param environment the {@link XeeEnv}
@@ -101,7 +145,10 @@ public class Xee {
     public Xee(final XeeEnv environment) {
         this.xeeEnv = environment;
 
-        initAuthServices(environment);
+        // if user has set the SANDBOX environment, then no need to deal with OAuth
+        if (this.xeeEnv != null && !this.xeeEnv.environment.equals(XeeEnv.SANDBOX)) {
+            initAuthServices(environment);
+        }
     }
 
     /**
@@ -160,12 +207,17 @@ public class Xee {
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
-                        Token token = xeeEnv.tokenStorage.get();
-                        // If the code reach this part, the token exists ! so assert it is not null
-                        assert token != null;
-                        Request.Builder requestBuilder = chain.request().newBuilder()
-                                                              .header("Authorization", "Bearer " + token.getAccessToken());
-                        return chain.proceed(requestBuilder.build());
+                        // if user has set the SANDBOX environment, then no need to deal with token
+                        if (xeeEnv != null && xeeEnv.environment.equals(XeeEnv.SANDBOX)) {
+                            return chain.proceed(chain.request());
+                        } else {
+                            Token token = xeeEnv.tokenStorage.get();
+                            // If the code reach this part, the token exists ! so assert it is not null
+                            assert token != null;
+                            Request.Builder requestBuilder = chain.request().newBuilder()
+                                                                  .header("Authorization", "Bearer " + token.getAccessToken());
+                            return chain.proceed(requestBuilder.build());
+                        }
                     }
                 })
                 .addInterceptor(new APIInterceptor())
@@ -202,6 +254,14 @@ public class Xee {
 
     @UiThread
     public void connect(@NonNull final ConnectionCallback connectionCallback) {
+
+        // check if user has set the SANDBOX environment, then auto-connect the user
+        if (xeeEnv != null && xeeEnv.environment.equals(XeeEnv.SANDBOX)) {
+            initApiServices();
+            connectionCallback.onSuccess();
+            return;
+        }
+
         // Get the storage util
         // Retrieve last token from storage
         Token currentToken = xeeEnv.tokenStorage.get();
@@ -661,6 +721,29 @@ public class Xee {
             throw CONNECTION_EXCEPTION;
         }
         return new XeeRequest<>(tripsService.getUsedTime(tripId));
+    }
+
+    //endregion
+
+    //region TOKEN
+
+    /**
+     * Set and store a token
+     * <strong>Please note that if a token already exists and is stored, it will be replaced by the new one</strong>
+     *
+     * @param environment the environment to use in order to set the token
+     * @param token       the token to set
+     */
+    public void setToken(@NonNull final XeeEnv environment, @NonNull final Token token) {
+
+        // set the environment
+        xeeEnv = environment;
+
+        // save the given token in storage to use it for any call to the API
+        xeeEnv.tokenStorage.store(token);
+
+        initAuthServices(xeeEnv);
+        initApiServices();
     }
 
     //endregion

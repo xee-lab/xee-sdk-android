@@ -16,11 +16,14 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class Trip {
+public class Trip implements Parcelable {
 
     @SerializedName("id")
     private String id;
@@ -36,6 +39,9 @@ public class Trip {
     private Date creationDate;
     @SerializedName("lastUpdateDate")
     private Date lastUpdateDate;
+
+    public Trip() {
+    }
 
     public String getId() {
         return id;
@@ -138,4 +144,46 @@ public class Trip {
                 ", lastUpdateDate=" + lastUpdateDate +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeParcelable(this.beginLocation, flags);
+        dest.writeParcelable(this.endLocation, flags);
+        dest.writeLong(this.beginDate != null ? this.beginDate.getTime() : -1);
+        dest.writeLong(this.endDate != null ? this.endDate.getTime() : -1);
+        dest.writeLong(this.creationDate != null ? this.creationDate.getTime() : -1);
+        dest.writeLong(this.lastUpdateDate != null ? this.lastUpdateDate.getTime() : -1);
+    }
+
+    protected Trip(Parcel in) {
+        this.id = in.readString();
+        this.beginLocation = in.readParcelable(Location.class.getClassLoader());
+        this.endLocation = in.readParcelable(Location.class.getClassLoader());
+        long tmpBeginDate = in.readLong();
+        this.beginDate = tmpBeginDate == -1 ? null : new Date(tmpBeginDate);
+        long tmpEndDate = in.readLong();
+        this.endDate = tmpEndDate == -1 ? null : new Date(tmpEndDate);
+        long tmpCreationDate = in.readLong();
+        this.creationDate = tmpCreationDate == -1 ? null : new Date(tmpCreationDate);
+        long tmpLastUpdateDate = in.readLong();
+        this.lastUpdateDate = tmpLastUpdateDate == -1 ? null : new Date(tmpLastUpdateDate);
+    }
+
+    public static final Parcelable.Creator<Trip> CREATOR = new Parcelable.Creator<Trip>() {
+        @Override
+        public Trip createFromParcel(Parcel source) {
+            return new Trip(source);
+        }
+
+        @Override
+        public Trip[] newArray(int size) {
+            return new Trip[size];
+        }
+    };
 }

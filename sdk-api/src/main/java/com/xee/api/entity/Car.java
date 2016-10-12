@@ -16,13 +16,15 @@
 
 package com.xee.api.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class Car {
+public class Car implements Parcelable {
 
     @SerializedName("id")
     private String id;
@@ -44,6 +46,9 @@ public class Car {
     private Date creationDate;
     @SerializedName("lastUpdateDate")
     private Date lastUpdateDate;
+
+    public Car() {
+    }
 
     public String getId() {
         return id;
@@ -179,4 +184,50 @@ public class Car {
                 ", lastUpdateDate=" + lastUpdateDate +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.make);
+        dest.writeString(this.model);
+        dest.writeInt(this.year);
+        dest.writeString(this.numberPlate);
+        dest.writeString(this.deviceId);
+        dest.writeInt(this.cardbId);
+        dest.writeLong(this.creationDate != null ? this.creationDate.getTime() : -1);
+        dest.writeLong(this.lastUpdateDate != null ? this.lastUpdateDate.getTime() : -1);
+    }
+
+    protected Car(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.make = in.readString();
+        this.model = in.readString();
+        this.year = in.readInt();
+        this.numberPlate = in.readString();
+        this.deviceId = in.readString();
+        this.cardbId = in.readInt();
+        long tmpCreationDate = in.readLong();
+        this.creationDate = tmpCreationDate == -1 ? null : new Date(tmpCreationDate);
+        long tmpLastUpdateDate = in.readLong();
+        this.lastUpdateDate = tmpLastUpdateDate == -1 ? null : new Date(tmpLastUpdateDate);
+    }
+
+    public static final Parcelable.Creator<Car> CREATOR = new Parcelable.Creator<Car>() {
+        @Override
+        public Car createFromParcel(Parcel source) {
+            return new Car(source);
+        }
+
+        @Override
+        public Car[] newArray(int size) {
+            return new Car[size];
+        }
+    };
 }

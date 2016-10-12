@@ -16,12 +16,14 @@
 
 package com.xee.core.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 /**
  * Represents an Error from requests or code
  */
-public class Error extends Exception {
+public class Error extends Exception implements Parcelable {
 
     private final String type;
     private final String tip;
@@ -71,4 +73,32 @@ public class Error extends Exception {
                 ", tip='" + tip + '\'' +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.type);
+        dest.writeString(this.tip);
+    }
+
+    protected Error(Parcel in) {
+        this.type = in.readString();
+        this.tip = in.readString();
+    }
+
+    public static final Parcelable.Creator<Error> CREATOR = new Parcelable.Creator<Error>() {
+        @Override
+        public Error createFromParcel(Parcel source) {
+            return new Error(source);
+        }
+
+        @Override
+        public Error[] newArray(int size) {
+            return new Error[size];
+        }
+    };
 }
