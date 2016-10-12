@@ -125,6 +125,7 @@ public class Xee {
                 try {
                     // if date parsed has failed with the default format, then try with the second one
                     formatter = new SimpleDateFormat(DATE_FORMAT_WITH_MS, Locale.US);
+                    formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
                     return formatter.parse(date);
                 } catch (ParseException error) {
                     if (BuildConfig.DEBUG) {
