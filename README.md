@@ -1,7 +1,7 @@
 # xee-sdk-android
 
 [![Build Status](https://api.travis-ci.org/xee-lab/xee-sdk-android.svg?branch=master)](https://travis-ci.org/xee-lab/xee-sdk-android)
-[![Release 3.0.2](https://img.shields.io/badge/Version-3.0.2-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.0.2)
+[![Release 3.1.0](https://img.shields.io/badge/Version-3.1.0-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.1.0)
 [![License Apache](https://img.shields.io/badge/License-Apache%202-blue.svg)](./LICENSE)
 
 ## Purpose
@@ -33,8 +33,8 @@ Then just add it to the dependencies in the `build.gradle`  **module** wherever 
 
 ```groovy
 dependencies {
-    compile 'com.github.xee-lab.xee-sdk-android:sdk-core:3.0.2'
-    compile 'com.github.xee-lab.xee-sdk-android:sdk-api:3.0.2'
+    compile 'com.github.xee-lab.xee-sdk-android:sdk-core:3.1.0'
+    compile 'com.github.xee-lab.xee-sdk-android:sdk-api:3.1.0'
 }
 ```
 
@@ -176,6 +176,68 @@ xeeApi.getTrips(carId, beginDate, endDate)
 ## Parcelable entity
 
 All entities from the SDK implement the `Parcelable` interface, making easier the way to pass data between your components
+
+## Sign-In button
+
+Use the Sign-In button to sign in with Xee. Three themes and three sizes are provided 
+
+- **size:** mini, normal, large
+- **theme:** grey, green, white
+
+
+![xee auth buttons](./sign_in_buttons.png)
+
+Use the Sign-In button in layout file
+
+```xml
+<com.xee.auth.SignInButton
+    android:id="@+id/sign_in_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:signInBtnSize="normal"
+    app:signInBtnTheme="grey"
+    />
+```
+
+You need to set a callback for result when clicking on the button by using the `setOnSignInClickResult` method and pass the `Xee API` instance that you have set (see [Setup](#setup) step)
+
+Either you implement the `ConnectionCallback` interface and override the `OnError` and `OnSuccess` methods to handle result in the activity
+
+```java
+public class MainActivity extends AppCompatActivity implements ConnectionCallback {
+	@Override
+    public void onError(@NonNull Throwable error) {
+        // sign in failed
+    }
+
+    @Override
+    public void onSuccess() {
+        // sign in success
+    }
+}
+```
+
+and pass it in the method
+
+```java
+signInButton.setOnSignInClickResult(xeeApi, this);
+```
+
+Or you can simply pass an anonymous implementation of `ConnectionCallback` in the method
+
+```java
+signInButton.setOnSignInClickResult(xeeApi, new ConnectionCallback() {
+    @Override
+    public void onError(@NonNull Throwable error) {
+        // sign in failed
+    }
+
+    @Override
+    public void onSuccess() {
+        // sign in success
+    }
+});
+```
 
 ## Example
 

@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -41,6 +42,7 @@ import com.xee.api.entity.Trip;
 import com.xee.api.entity.User;
 import com.xee.auth.ConnectionCallback;
 import com.xee.auth.DisconnectCallback;
+import com.xee.auth.SignInButton;
 import com.xee.core.XeeEnv;
 import com.xee.core.XeeRequest;
 import com.xee.core.entity.Error;
@@ -65,8 +67,10 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity implements ConnectionCallback {
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.sign_in_button) SignInButton signInButton;
+    @BindView(R.id.sign_in_button_container) RelativeLayout signInButtonContainer;
+    @BindView(R.id.progress_bar_container) RelativeLayout progressBarContainer;
 
     interface PromptDialog {
         void onInput(final String id);
@@ -116,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
         final OAuth2Client oAuth2Client = new OAuth2Client(getString(R.string.clientId), getString(R.string.clientSecret), getString(R.string.redirectUri));
         xeeEnv = new XeeEnv(getApplicationContext(), oAuth2Client, TIMEOUT, TIMEOUT, ENVIRONMENT);
         xeeApi = new Xee(xeeEnv);
+        signInButton.setOnSignInClickResult(xeeApi, this);
     }
 
     @Override
@@ -134,21 +139,28 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
      * @param ws the Web service to call
      */
     private void callWS(WebServices.WS ws) {
+        if(ws != WebServices.WS.CONNECT) {
+            progressBarContainer.setVisibility(View.VISIBLE);
+            signInButtonContainer.setVisibility(View.INVISIBLE);
+        }
         switch (ws) {
             //region AUTH
             case CONNECT:
-                xeeApi.connect(this);
+                progressBarContainer.setVisibility(View.INVISIBLE);
+                signInButtonContainer.setVisibility(View.VISIBLE);
                 break;
 
             case DISCONNECT:
                 xeeApi.disconnect(new DisconnectCallback() {
                     @Override
                     public void onError(@NonNull Throwable error) {
+                        progressBarContainer.setVisibility(View.INVISIBLE);
                         Snackbar.make(recyclerView, "Error on DISCONNECT!", Snackbar.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onSuccess() {
+                        progressBarContainer.setVisibility(View.INVISIBLE);
                         Snackbar.make(recyclerView, "Disconnected", Snackbar.LENGTH_SHORT).show();
                     }
                 });
@@ -450,6 +462,8 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
      * @param isSuccess true if response is successful, otherwise false
      */
     private void showResult(String caller, Object data, boolean isSuccess) {
+        signInButtonContainer.setVisibility(View.INVISIBLE);
+        progressBarContainer.setVisibility(View.INVISIBLE);
         Gson gson = new Gson();
         String json = gson.toJson(data);
         final String prettyResult = JsonLogger.getPrettyLog(json);
@@ -473,7 +487,10 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
         final EditText promptDialogInput = (EditText) promptView.findViewById(R.id.dialog_prompt_edit_text);
         alertDialogBuilder.setCancelable(false)
                           .setPositiveButton("Valid", (dialog, id) -> callback.onInput(promptDialogInput.getText().toString()))
-                          .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
+                          .setNegativeButton("Cancel", (dialog, id) -> {
+                              dialog.cancel();
+                              progressBarContainer.setVisibility(View.INVISIBLE);
+                          });
 
         AlertDialog alert = alertDialogBuilder.create();
         alert.setCancelable(true);
