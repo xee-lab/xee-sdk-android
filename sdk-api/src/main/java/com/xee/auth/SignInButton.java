@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Eliocity
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.xee.auth;
 
 import android.content.Context;
@@ -6,7 +22,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -20,20 +38,15 @@ import java.lang.ref.WeakReference;
 
 public final class SignInButton extends Button {
 
-    private static final int TEXT_WHITE = 0xFFFFFFFF;
-    private static final int TEXT_GREY = 0xFF474747;
-
-    private static final int SIZE_ICON = 24;
-    private static final int SIZE_NORMAL = 42;
-    private static final int SIZE_LARGE = 56;
-
-    private static final int PADDING_VERTICAL = 8;
-    private static final int PADDING_HORIZONTAL = 16;
-    private static final int PADDING_DRAWABLE = 8;
-
-    private Drawable mDrawable;
+    private int mSizeIcon;
+    private int mSizeNormal;
+    private int mSizeLarge;
+    private int mPaddingVertical;
+    private int mPaddingHorizontal;
+    private int mPaddingDrawable;
     private int mSize = -1;
     private int mTheme = -1;
+    private Drawable mDrawable;
     private OnClickListener mListener;
     private ConnectionCallback mConnectionCallback;
     private WeakReference<Xee> mXeeWeakReference;
@@ -68,7 +81,15 @@ public final class SignInButton extends Button {
     private void init(Context context, AttributeSet attrs, int defStyle) {
         final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SignInButton, defStyle, 0);
         mTheme = a.getInt(R.styleable.SignInButton_signInBtnTheme, Theme.GREY.ordinal());
-        mSize = a.getInt(R.styleable.SignInButton_signInBtnSize, SIZE_NORMAL);
+        mSize = a.getInt(R.styleable.SignInButton_signInBtnSize, mSizeNormal);
+
+        mSizeIcon = getRealDimen(R.dimen.sign_in_button_icon);
+        mSizeNormal = getRealDimen(R.dimen.sign_in_button_normal);
+        mSizeLarge = getRealDimen(R.dimen.sign_in_button_large);
+
+        mPaddingHorizontal = getRealDimen(R.dimen.sign_in_padding_horizontal);
+        mPaddingVertical = getRealDimen(R.dimen.sign_in_padding_vertical);
+        mPaddingDrawable = getRealDimen(R.dimen.sign_in_padding_drawable);
 
         setBtnSize(context, mSize);
         setBtnTheme(mTheme);
@@ -78,55 +99,53 @@ public final class SignInButton extends Button {
 
     /**
      * Set the button size
+     *
      * @param size the button size {@link Size}
      */
-    public void setBtnSize(Size size) {
+    public void setBtnSize(@NonNull Size size) {
         switch (size) {
             case ICON:
-                setBtnSize(getContext(), SIZE_ICON);
+                setBtnSize(getContext(), mSizeIcon);
                 break;
             case NORMAL:
-                setBtnSize(getContext(), SIZE_NORMAL);
+                setBtnSize(getContext(), mSizeNormal);
                 break;
             case LARGE:
-                setBtnSize(getContext(), SIZE_LARGE);
+                setBtnSize(getContext(), mSizeLarge);
                 break;
         }
     }
 
     /**
      * Set the button size
-     * @param size the button size value
+     *
+     * @param size    the button size value
      * @param context the context
      */
     private void setBtnSize(final Context context, final int size) {
         mSize = size;
-        final int minHeight = dpToPx(size) + dpToPx(PADDING_VERTICAL * 2);
-        switch (size) {
-            case SIZE_ICON:
-                setText("");
-                setBtnPadding(PADDING_HORIZONTAL, PADDING_VERTICAL, PADDING_HORIZONTAL, PADDING_VERTICAL);
-                setHeight(minHeight);
-                setCompoundDrawablePadding(dpToPx(0));
-                break;
-            case SIZE_NORMAL:
-                setText(context.getString(R.string.sign_in_with_xee));
-                setBtnPadding(PADDING_HORIZONTAL, PADDING_VERTICAL, PADDING_HORIZONTAL, PADDING_VERTICAL);
-                setHeight(minHeight);
-                setCompoundDrawablePadding(dpToPx(PADDING_DRAWABLE));
-                break;
-            default:
-            case SIZE_LARGE:
-                setText(context.getString(R.string.sign_in_with_xee));
-                setBtnPadding(PADDING_HORIZONTAL, PADDING_VERTICAL, PADDING_HORIZONTAL, PADDING_VERTICAL);
-                setHeight(minHeight);
-                setCompoundDrawablePadding(dpToPx(PADDING_DRAWABLE));
-                break;
+        final int minHeight = dpToPx(size) + dpToPx(mPaddingVertical * 2);
+        if (size == mSizeIcon) {
+            setText("");
+            setBtnPadding(mPaddingHorizontal, mPaddingVertical, mPaddingHorizontal, mPaddingVertical);
+            setHeight(minHeight);
+            setCompoundDrawablePadding(dpToPx(0));
+        } else if (size == mSizeLarge) {
+            setText(context.getString(R.string.sign_in_with_xee));
+            setBtnPadding(mPaddingHorizontal, mPaddingVertical, mPaddingHorizontal, mPaddingVertical);
+            setHeight(minHeight);
+            setCompoundDrawablePadding(dpToPx(mPaddingDrawable));
+        } else {
+            setText(context.getString(R.string.sign_in_with_xee));
+            setBtnPadding(mPaddingHorizontal, mPaddingVertical, mPaddingHorizontal, mPaddingVertical);
+            setHeight(minHeight);
+            setCompoundDrawablePadding(dpToPx(mPaddingDrawable));
         }
     }
 
     /**
      * Set the button theme
+     *
      * @param theme the button theme value
      */
     private void setBtnTheme(int theme) {
@@ -135,45 +154,37 @@ public final class SignInButton extends Button {
             case 0:
                 mDrawable = getContext().getResources().getDrawable(R.drawable.xee_auth_btn_logo_black, null);
                 setBackgroundTintList(getContext().getResources().getColorStateList(R.color.sign_in_button_bg_white, null));
-                setTextColor(TEXT_GREY);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.sign_in_button_text_grey));
                 break;
             case 1:
                 mDrawable = getContext().getResources().getDrawable(R.drawable.xee_auth_btn_logo_white, null);
                 setBackgroundTintList(getContext().getResources().getColorStateList(R.color.sign_in_button_bg_grey, null));
-                setTextColor(TEXT_WHITE);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.sign_in_button_text_white));
                 break;
             case 2:
                 mDrawable = getContext().getResources().getDrawable(R.drawable.xee_auth_btn_logo_white, null);
                 setBackgroundTintList(getContext().getResources().getColorStateList(R.color.sign_in_button_bg_green, null));
-                setTextColor(TEXT_GREY);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.sign_in_button_text_grey));
                 break;
         }
 
-        mDrawable.setBounds(0, 0, dpToPx(SIZE_ICON), dpToPx(SIZE_ICON));
+        mDrawable.setBounds(0, 0, dpToPx(mSizeIcon), dpToPx(mSizeIcon));
         setCompoundDrawables(null, null, mDrawable, null);
     }
 
     /**
      * Set the button theme
+     *
      * @param theme the button theme {@link Theme}
      */
-    public void setBtnTheme(Theme theme) {
+    public void setBtnTheme(@NonNull Theme theme) {
         mTheme = theme.ordinal();
-        switch (mTheme) {
-            case 0:
-                setBtnTheme(Theme.WHITE.ordinal());
-                break;
-            case 1:
-                setBtnTheme(Theme.GREY.ordinal());
-                break;
-            case 2:
-                setBtnTheme(Theme.GREEN.ordinal());
-                break;
-        }
+        setBtnTheme(mTheme);
     }
 
     /**
      * Set a click listener invoked when the button is clicked
+     *
      * @param listener the listener
      */
     public void setOnClickListener(OnClickListener listener) {
@@ -182,7 +193,8 @@ public final class SignInButton extends Button {
 
     /**
      * Set the sign in callback when the button is clicked
-     * @param xee the {@link Xee} instance
+     *
+     * @param xee                the {@link Xee} instance
      * @param connectionCallback the connection callback
      */
     public void setOnSignInClickResult(@NonNull Xee xee, @NonNull final ConnectionCallback connectionCallback) {
@@ -192,13 +204,26 @@ public final class SignInButton extends Button {
 
     /**
      * Set the button padding
-     * @param left the padding left
-     * @param top the padding top
-     * @param right the padding right
+     *
+     * @param left   the padding left
+     * @param top    the padding top
+     * @param right  the padding right
      * @param bottom the padding bottom
      */
     private void setBtnPadding(int left, int top, int right, int bottom) {
         setPadding(dpToPx(left), dpToPx(top), dpToPx(right), dpToPx(bottom));
+    }
+
+    /**
+     * Get dimen based on current screen density
+     *
+     * @param dimen the dimen
+     * @return
+     */
+    private int getRealDimen(@DimenRes int dimen) {
+        final float scaleRatio = getResources().getDisplayMetrics().density;
+        float dimenPix = getResources().getDimension(dimen);
+        return (int) (dimenPix / scaleRatio);
     }
 
     /**
@@ -282,15 +307,15 @@ public final class SignInButton extends Button {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_UP) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
             // detect if user is clicking outside
             Rect viewRect = new Rect();
             getGlobalVisibleRect(viewRect);
             if (viewRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                if(mListener != null) {
+                if (mListener != null) {
                     mListener.onClick(this);
                 }
-                if(mConnectionCallback != null) {
+                if (mConnectionCallback != null) {
                     signIn();
                 }
             }
@@ -300,11 +325,11 @@ public final class SignInButton extends Button {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if(event.getAction() == KeyEvent.ACTION_UP && (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-            if(mListener != null) {
+        if (event.getAction() == KeyEvent.ACTION_UP && (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+            if (mListener != null) {
                 mListener.onClick(this);
             }
-            if(mConnectionCallback != null) {
+            if (mConnectionCallback != null) {
                 signIn();
             }
         }
@@ -315,18 +340,18 @@ public final class SignInButton extends Button {
      * Launch the sign in process and notify result
      */
     private void signIn() {
-        if(mXeeWeakReference != null && mXeeWeakReference.get() != null) {
+        if (mXeeWeakReference != null && mXeeWeakReference.get() != null) {
             mXeeWeakReference.get().connect(new ConnectionCallback() {
                 @Override
                 public void onError(@NonNull Throwable error) {
-                    if(mConnectionCallback != null) {
+                    if (mConnectionCallback != null) {
                         mConnectionCallback.onError(error);
                     }
                 }
 
                 @Override
                 public void onSuccess() {
-                    if(mConnectionCallback != null) {
+                    if (mConnectionCallback != null) {
                         mConnectionCallback.onSuccess();
                     }
                 }
@@ -336,6 +361,7 @@ public final class SignInButton extends Button {
 
     /**
      * Convert do to px
+     *
      * @param dp the dp to convert
      * @return
      */

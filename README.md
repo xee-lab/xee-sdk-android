@@ -201,11 +201,7 @@ Use the Sign-In button in layout file
 
 You need to set a callback for result when clicking on the button by using the `setOnSignInClickResult` method and pass the `Xee API` instance that you have set (see [Setup](#setup) step)
 
-```java
-signInButton.setOnSignInClickResult(xeeApi, this);
-```
-
-Then implement the `ConnectionCallback` interface and override the `OnError` and `OnSuccess` methods to handle result
+Either you implement the `ConnectionCallback` interface and override the `OnError` and `OnSuccess` methods to handle result in the activity
 
 ```java
 public class MainActivity extends AppCompatActivity implements ConnectionCallback {
@@ -219,6 +215,28 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
         // sign in success
     }
 }
+```
+
+and pass it in the method
+
+```java
+signInButton.setOnSignInClickResult(xeeApi, this);
+```
+
+Or you can simply pass an anonymous implementation of `ConnectionCallback` in the method
+
+```java
+signInButton.setOnSignInClickResult(xeeApi, new ConnectionCallback() {
+    @Override
+    public void onError(@NonNull Throwable error) {
+        // sign in failed
+    }
+
+    @Override
+    public void onSuccess() {
+        // sign in success
+    }
+});
 ```
 
 ## Example

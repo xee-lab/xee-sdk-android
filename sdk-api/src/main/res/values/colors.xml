@@ -3,4 +3,7 @@
     <color name="sign_in_button_bg_white">#ffffffff</color>
     <color name="sign_in_button_bg_grey">#ff474747</color>
     <color name="sign_in_button_bg_green">#ff99cc00</color>
+
+    <color name="sign_in_button_text_white">#ffffffff</color>
+    <color name="sign_in_button_text_grey">#ff474747</color>
 </resources>
