@@ -1,0 +1,16 @@
+<resources>
+    <declare-styleable name="SignInButton">
+        <!-- theme color -->
+        <attr name="signInBtnTheme" format="enum">
+            <enum name="white" value="0"/>
+            <enum name="grey" value="1"/>
+            <enum name="green" value="2"/>
+        </attr>
+        <!-- button size -->
+        <attr name="signInBtnSize" format="enum">
+            <enum name="icon" value="24"/>
+            <enum name="normal" value="42"/>
+            <enum name="large" value="56"/>
+        </attr>
+    </declare-styleable>
+</resources>

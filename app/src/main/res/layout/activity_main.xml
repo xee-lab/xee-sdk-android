@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -15,21 +16,77 @@
         android:orientation="horizontal"
         android:weightSum="3">
 
-        <fragment
-            android:id="@+id/fragment_webservice_list"
-            android:name="com.xee.demo.fragments.WebServicesListFragment"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:layout="@layout/fragment_web_services_list"/>
+            android:background="@android:color/white"
+            android:gravity="left"
+            android:orientation="vertical"
+            >
 
-        <fragment
-            android:id="@+id/fragment_webservice_result"
-            android:name="com.xee.demo.fragments.WebServicesResultFragment"
+            <fragment
+                android:id="@+id/fragment_webservice_list"
+                android:name="com.xee.demo.fragments.WebServicesListFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/fragment_web_services_list"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            tools:layout="@layout/fragment_web_services_result"/>
+            >
+
+            <fragment
+                android:id="@+id/fragment_webservice_result"
+                android:name="com.xee.demo.fragments.WebServicesResultFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/fragment_web_services_result"/>
+
+            <RelativeLayout
+                android:id="@+id/sign_in_button_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/webservice_result"
+                android:visibility="invisible"
+                tools:visibility="visible"
+                >
+
+                <com.xee.auth.SignInButton
+                    android:id="@+id/sign_in_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    app:signInBtnSize="normal"
+                    app:signInBtnTheme="grey"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/progress_bar_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/webservice_result"
+                android:visibility="invisible"
+                tools:visibility="invisible"
+                >
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true"
+                    />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
 
     </LinearLayout>
 

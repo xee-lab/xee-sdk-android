@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="sign_in_button_icon">24dp</dimen>
+    <dimen name="sign_in_button_normal">42dp</dimen>
+    <dimen name="sign_in_button_large">56dp</dimen>
+
+    <dimen name="sign_in_padding_horizontal">16dp</dimen>
+    <dimen name="sign_in_padding_vertical">8dp</dimen>
+    <dimen name="sign_in_padding_drawable">8dp</dimen>
+</resources>
