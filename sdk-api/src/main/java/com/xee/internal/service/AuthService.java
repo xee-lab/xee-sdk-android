@@ -28,6 +28,7 @@ public interface AuthService {
     final class Routes {
         public static final String AUTHENTICATION = "auth/auth";
         public static final String ACCESS_TOKEN = "auth/access_token";
+        public static final String REGISTER = "auth/register";
     }
 
     final class Parameters {

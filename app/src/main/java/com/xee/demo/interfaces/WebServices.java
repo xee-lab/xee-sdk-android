@@ -21,6 +21,7 @@ public class WebServices {
         AUTH("AUTH", true),
         CONNECT("Connect"),
         DISCONNECT("Disconnect"),
+        REGISTER("Register"),
 
         USER("USER", true),
         GET_USER("Get user"),

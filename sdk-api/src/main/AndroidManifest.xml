@@ -4,5 +4,7 @@
     <application>
         <activity
             android:name="com.xee.auth.AuthenticationActivity" />
+        <activity
+            android:name="com.xee.auth.RegisterActivity" />
     </application>
 </manifest>
