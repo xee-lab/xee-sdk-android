@@ -5,13 +5,13 @@ group = "${SDK_GROUP}"
 version = "${SDK_VERSION}"
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 24
-        versionCode 5
+        targetSdkVersion 25
+        versionCode 6
         versionName "${SDK_VERSION}"
     }
     buildTypes {
