@@ -11,13 +11,13 @@ android {
             storePassword 'xeesdk'
         }
     }
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.example.app"
         minSdkVersion 15
-        targetSdkVersion 24
-        versionCode 4
+        targetSdkVersion 25
+        versionCode 5
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

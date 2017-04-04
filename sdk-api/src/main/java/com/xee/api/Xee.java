@@ -43,6 +43,8 @@ import com.xee.api.entity.User;
 import com.xee.auth.AuthenticationActivity;
 import com.xee.auth.ConnectionCallback;
 import com.xee.auth.DisconnectCallback;
+import com.xee.auth.RegisterActivity;
+import com.xee.auth.RegisterCallback;
 import com.xee.core.XeeEnv;
 import com.xee.core.XeeRequest;
 import com.xee.core.entity.Token;
@@ -311,6 +313,55 @@ public class Xee {
             initApiServices();
             connectionCallback.onSuccess();
         }
+    }
+
+    /**
+     * Register an user
+     *
+     * @param registerCallback the register callback
+     * @param autoConnect      true if must connect the user after registered completed, otherwise false
+     */
+    public void register(@NonNull final RegisterCallback registerCallback, final boolean autoConnect) {
+        RegisterActivity.callback = new RegisterActivity.CodeCallback() {
+            @Override
+            public void onCanceled() {
+                registerCallback.onCanceled();
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                registerCallback.onError(throwable);
+            }
+
+            @Override
+            public void onAccessDenied() {
+                registerCallback.onRegisteredButAccessDenied();
+            }
+
+            @Override
+            public void onSuccess(@NonNull String code) {
+                if (autoConnect) {
+                    authService.obtainToken(AuthService.GRANT_TYPES.AUTHORIZATION_CODE, code)
+                               .enqueue(new Callback<Token>() {
+                                   @Override
+                                   public void onResponse(Call<Token> call, retrofit2.Response<Token> response) {
+                                       xeeEnv.tokenStorage.store(response.body());
+                                       initApiServices();
+                                       registerCallback.onRegistered(true);
+                                   }
+
+                                   @Override
+                                   public void onFailure(Call<Token> call, Throwable t) {
+                                       registerCallback.onError(t);
+                                   }
+                               });
+                } else {
+                    registerCallback.onRegistered(false);
+                }
+            }
+        };
+
+        xeeEnv.context.startActivity(RegisterActivity.intent(xeeEnv.context, xeeEnv.client.clientId, xeeEnv.environment));
     }
 
     /**

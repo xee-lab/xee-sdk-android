@@ -42,6 +42,7 @@ import com.xee.api.entity.Trip;
 import com.xee.api.entity.User;
 import com.xee.auth.ConnectionCallback;
 import com.xee.auth.DisconnectCallback;
+import com.xee.auth.RegisterCallback;
 import com.xee.auth.SignInButton;
 import com.xee.core.XeeEnv;
 import com.xee.core.XeeRequest;
@@ -164,6 +165,35 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
                         Snackbar.make(recyclerView, "Disconnected", Snackbar.LENGTH_SHORT).show();
                     }
                 });
+                break;
+
+            case REGISTER:
+                xeeApi.register(new RegisterCallback() {
+                    @Override
+                    public void onCanceled() {
+                        progressBarContainer.setVisibility(View.INVISIBLE);
+                        Snackbar.make(recyclerView, "REGISTER CANCELED BY USER", Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        progressBarContainer.setVisibility(View.INVISIBLE);
+                        Snackbar.make(recyclerView, "REGISTER ERROR!", Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onRegisteredButAccessDenied() {
+                        progressBarContainer.setVisibility(View.INVISIBLE);
+                        Snackbar.make(recyclerView, "REGISTERED BUT ACCESS DENIED", Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onRegistered(boolean loggedIn) {
+                        progressBarContainer.setVisibility(View.INVISIBLE);
+                        Snackbar.make(recyclerView, loggedIn ? "REGISTERED AND LOGGED IN" : "REGISTERED", Snackbar.LENGTH_SHORT).show();
+                    }
+
+                }, true);
                 break;
 
             //endregion
