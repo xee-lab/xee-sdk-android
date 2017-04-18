@@ -17,18 +17,31 @@
 package com.xee.internal.service;
 
 import com.xee.api.entity.Car;
+import com.xee.api.entity.Device;
 import com.xee.api.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface UsersService {
 
     final class Routes {
         public static final String ME = "users/me";
         public static final String CARS = "users/me/cars";
+        public static final String CREATE_CAR = "users/{userId}/cars";
+        public static final String DEVICES = "users/{userId}/devices";
+    }
+
+    final class Parameters {
+        public static final String USER_ID = "userId";
     }
 
     @GET(Routes.ME)
@@ -36,4 +49,11 @@ public interface UsersService {
 
     @GET(Routes.CARS)
     Call<List<Car>> getCars();
+
+    @Headers("Content-Type: application/json")
+    @POST(Routes.CREATE_CAR)
+    Call<Car> createCar(@Path(Parameters.USER_ID) String userId, @Body Map<String, Object> fields);
+
+    @GET(Routes.DEVICES)
+    Call<List<Device>> getDevices(@Path(Parameters.USER_ID) String userId);
 }
