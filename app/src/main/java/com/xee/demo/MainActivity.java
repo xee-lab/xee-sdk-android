@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.xee.api.Xee;
 import com.xee.api.entity.Car;
+import com.xee.api.entity.Device;
 import com.xee.api.entity.Location;
 import com.xee.api.entity.Signal;
 import com.xee.api.entity.Stat;
@@ -59,6 +61,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +78,14 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 
     interface PromptDialog {
         void onInput(final String id);
+    }
+
+    interface PromptDialogAssociateXeeConnectToUser {
+        void onInput(final String xeeConnectId, final String xeeConnectPin);
+    }
+
+    interface PromptDialogAssociateXeeConnectToCar {
+        void onInput(final String xeeConnectId, final String carId);
     }
 
     /**
@@ -140,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
      * @param ws the Web service to call
      */
     private void callWS(WebServices.WS ws) {
-        if(ws != WebServices.WS.CONNECT) {
+        if (ws != WebServices.WS.CONNECT) {
             progressBarContainer.setVisibility(View.VISIBLE);
             signInButtonContainer.setVisibility(View.INVISIBLE);
         }
@@ -217,6 +228,107 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
                               showResult(ws.getName(), error, false);
                           }
                       });
+                break;
+
+            case CREATE_CAR:
+                showPromptDialogCreateCar(ws.getName(), new PromptDialog() {
+                    @Override
+                    public void onInput(String carName) {
+                        Map<String, Object> carInfo = new ArrayMap<>();
+                        carInfo.put("name", carName);
+                        xeeApi.createCar("me", carInfo)
+                              .enqueue(new XeeRequest.Callback<Car>() {
+                                  @Override
+                                  public void onSuccess(Car response) {
+                                      showResult(ws.getName(), response, true);
+                                  }
+
+                                  @Override
+                                  public void onError(Error error) {
+                                      showResult(ws.getName(), error, false);
+                                  }
+                              });
+                    }
+                });
+                break;
+
+            case GET_DEVICES:
+                xeeApi.getDevices("me")
+                      .enqueue(new XeeRequest.Callback<List<Device>>() {
+                          @Override
+                          public void onSuccess(List<Device> response) {
+                              showResult(ws.getName(), response, true);
+                          }
+
+                          @Override
+                          public void onError(Error error) {
+                              showResult(ws.getName(), error, false);
+                          }
+                      });
+                break;
+
+            //endregion
+
+            //region DEVICE
+            case ASSOCIATE_USER_WITH_DEVICE:
+                showPromptDialogAssociationXeeConnectToUser(ws.getName(), new PromptDialogAssociateXeeConnectToUser() {
+                    @Override
+                    public void onInput(String xeeConnectId, String xeeConnectPin) {
+                        xeeApi.associateUserWithDevice(xeeConnectId, xeeConnectPin)
+                              .enqueue(new XeeRequest.Callback<Void>() {
+                                  @Override
+                                  public void onSuccess(Void response) {
+                                      showResult(ws.getName(), getString(R.string.success), true);
+                                  }
+
+                                  @Override
+                                  public void onError(Error error) {
+                                      showResult(ws.getName(), error, false);
+                                  }
+                              });
+                    }
+                });
+
+                break;
+
+            case ASSOCIATE_CAR_WITH_DEVICE:
+                showPromptDialogAssociationXeeConnectToCar(ws.getName(), new PromptDialogAssociateXeeConnectToCar() {
+                    @Override
+                    public void onInput(String xeeConnectId, String carId) {
+                        xeeApi.associateCarWithDevice(xeeConnectId, carId)
+                              .enqueue(new XeeRequest.Callback<Void>() {
+                                  @Override
+                                  public void onSuccess(Void response) {
+                                      showResult(ws.getName(), getString(R.string.success), true);
+                                  }
+
+                                  @Override
+                                  public void onError(Error error) {
+                                      showResult(ws.getName(), error, false);
+                                  }
+                              });
+                    }
+                });
+                break;
+
+            case DISSOCIATE:
+                showPromptDialogDissociateXeeConnect(ws.getName(), new PromptDialog() {
+                    @Override
+                    public void onInput(String xeeConnectId) {
+                        xeeApi.dissociate(xeeConnectId)
+                              .enqueue(new XeeRequest.Callback<Void>() {
+                                  @Override
+                                  public void onSuccess(Void response) {
+                                      showResult(ws.getName(), getString(R.string.success), true);
+                                  }
+
+                                  @Override
+                                  public void onError(Error error) {
+                                      showResult(ws.getName(), error, false);
+                                  }
+                              });
+                    }
+                });
                 break;
             //endregion
 
@@ -517,6 +629,120 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
         final EditText promptDialogInput = (EditText) promptView.findViewById(R.id.dialog_prompt_edit_text);
         alertDialogBuilder.setCancelable(false)
                           .setPositiveButton("Valid", (dialog, id) -> callback.onInput(promptDialogInput.getText().toString()))
+                          .setNegativeButton("Cancel", (dialog, id) -> {
+                              dialog.cancel();
+                              progressBarContainer.setVisibility(View.INVISIBLE);
+                          });
+
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.setCancelable(true);
+        alert.setCanceledOnTouchOutside(true);
+        alert.show();
+    }
+
+    /**
+     * Show a prompt dialog to the user in order to create a car
+     *
+     * @param callback the callback response when user has entered the car name
+     */
+    private void showPromptDialogCreateCar(@Nullable String title, @NonNull PromptDialog callback) {
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_prompt_create_car, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final TextView promptDialogTitle = (TextView) promptView.findViewById(R.id.dialog_prompt_title_text_view);
+        promptDialogTitle.setText(title);
+        final EditText promptDialogInput = (EditText) promptView.findViewById(R.id.dialog_prompt_edit_text);
+        alertDialogBuilder.setCancelable(false)
+                          .setPositiveButton("Valid", (dialog, id) -> callback.onInput(promptDialogInput.getText().toString()))
+                          .setNegativeButton("Cancel", (dialog, id) -> {
+                              dialog.cancel();
+                              progressBarContainer.setVisibility(View.INVISIBLE);
+                          });
+
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.setCancelable(true);
+        alert.setCanceledOnTouchOutside(true);
+        alert.show();
+    }
+
+    /**
+     * Show a prompt dialog in order to associate a XeeCONNECT to a user
+     *
+     * @param callback the callback response when XeeCONNECT has been associated to a user
+     */
+    private void showPromptDialogAssociationXeeConnectToUser(@Nullable String title, @NonNull PromptDialogAssociateXeeConnectToUser callback) {
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_prompt_association_xeeconnect_user, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final TextView promptDialogTitle = (TextView) promptView.findViewById(R.id.dialog_prompt_title_text_view);
+        promptDialogTitle.setText(title);
+        final EditText promptDialogInputXeeConnectId = (EditText) promptView.findViewById(R.id.xeeconnect_id_dialog_prompt_edit_text);
+        final EditText promptDialogInputXeeConnectPin = (EditText) promptView.findViewById(R.id.xeeconnect_pin_dialog_prompt_edit_text);
+        alertDialogBuilder.setCancelable(false)
+                          .setPositiveButton("Valid", (dialog, id) -> {
+                              callback.onInput(promptDialogInputXeeConnectId.getText().toString(), promptDialogInputXeeConnectPin.getText().toString());
+                          })
+                          .setNegativeButton("Cancel", (dialog, id) -> {
+                              dialog.cancel();
+                              progressBarContainer.setVisibility(View.INVISIBLE);
+                          });
+
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.setCancelable(true);
+        alert.setCanceledOnTouchOutside(true);
+        alert.show();
+    }
+
+    /**
+     * Show a prompt dialog in order to associate a XeeCONNECT to a car
+     *
+     * @param callback the callback response when XeeCONNECT has been associated to a car
+     */
+    private void showPromptDialogAssociationXeeConnectToCar(@Nullable String title, @NonNull PromptDialogAssociateXeeConnectToCar callback) {
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_prompt_association_xeeconnect_car, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final TextView promptDialogTitle = (TextView) promptView.findViewById(R.id.dialog_prompt_title_text_view);
+        promptDialogTitle.setText(title);
+        final EditText promptDialogInputXeeConnectId = (EditText) promptView.findViewById(R.id.xeeconnect_id_dialog_prompt_edit_text);
+        final EditText promptDialogInputCarId = (EditText) promptView.findViewById(R.id.car_id_dialog_prompt_edit_text);
+        alertDialogBuilder.setCancelable(false)
+                          .setPositiveButton("Valid", (dialog, id) -> {
+                              callback.onInput(promptDialogInputXeeConnectId.getText().toString(), promptDialogInputCarId.getText().toString());
+                          })
+                          .setNegativeButton("Cancel", (dialog, id) -> {
+                              dialog.cancel();
+                              progressBarContainer.setVisibility(View.INVISIBLE);
+                          });
+
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.setCancelable(true);
+        alert.setCanceledOnTouchOutside(true);
+        alert.show();
+    }
+
+    /**
+     * Show a prompt dialog in order to dissociate a XeeCONNECT
+     *
+     * @param callback the callback response when XeeCONNECT has been dissociated
+     */
+    private void showPromptDialogDissociateXeeConnect(@Nullable String title, @NonNull PromptDialog callback) {
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_prompt_dissociation_xeeconnect, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final TextView promptDialogTitle = (TextView) promptView.findViewById(R.id.dialog_prompt_title_text_view);
+        promptDialogTitle.setText(title);
+        final EditText promptDialogInputXeeConnectId = (EditText) promptView.findViewById(R.id.xeeconnect_id_dialog_prompt_edit_text);
+        alertDialogBuilder.setCancelable(false)
+                          .setPositiveButton("Valid", (dialog, id) -> callback.onInput(promptDialogInputXeeConnectId.getText().toString()))
                           .setNegativeButton("Cancel", (dialog, id) -> {
                               dialog.cancel();
                               progressBarContainer.setVisibility(View.INVISIBLE);

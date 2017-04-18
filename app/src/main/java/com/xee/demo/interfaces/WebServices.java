@@ -26,6 +26,8 @@ public class WebServices {
         USER("USER", true),
         GET_USER("Get user"),
         GET_USER_CARS("Get user cars"),
+        CREATE_CAR("Create car"),
+        GET_DEVICES("Get devices"),
 
         CARS("CARS", true),
         GET_CAR("Get car"),
@@ -35,6 +37,11 @@ public class WebServices {
         GET_TRIPS("Get trips"),
         GET_MILEAGE("Get mileage"),
         GET_USED_TIME("Get used time"),
+
+        DEVICE("DEVICE", true),
+        ASSOCIATE_USER_WITH_DEVICE("Associate user with device"),
+        ASSOCIATE_CAR_WITH_DEVICE("Associate car with device"),
+        DISSOCIATE("Dissociate"),
 
         TRIPS("TRIPS", true),
         GET_TRIP("Get trip"),

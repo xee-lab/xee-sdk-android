@@ -1,4 +1,18 @@
 <resources>
     <string name="prompt_dialog_title">Identifier</string>
     <string name="prompt_dialog_hint">enter the id to check</string>
+
+    <string name="prompt_dialog_hint_create_car">Create a car</string>
+    <string name="prompt_dialog_hint_create_car_name">enter the car name</string>
+
+    <string name="prompt_dialog_associate_user_with_device">Associate XeeCONNECT to a user</string>
+    <string name="prompt_dialog_hint_enter_xeeconnect_id">XeeCONNECT id</string>
+    <string name="prompt_dialog_hint_enter_xeeconnect_pin">XeeCONNECT pin</string>
+
+    <string name="prompt_dialog_associate_car_with_device">Associate XeeCONNECT to a car</string>
+    <string name="prompt_dialog_hint_enter_car_id">car id</string>
+
+    <string name="prompt_dialog_dissociate_xeeconnect">Dissociate XeeCONNECT</string>
+
+    <string name="success">success</string>
 </resources>

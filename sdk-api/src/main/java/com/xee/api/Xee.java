@@ -19,6 +19,7 @@ package com.xee.api;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import android.support.annotation.UiThread;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -34,6 +35,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.xee.BuildConfig;
 import com.xee.api.entity.Car;
+import com.xee.api.entity.Device;
 import com.xee.api.entity.Location;
 import com.xee.api.entity.Signal;
 import com.xee.api.entity.Stat;
@@ -53,6 +55,7 @@ import com.xee.internal.LogRequestInterceptor;
 import com.xee.internal.RefreshTokenInterceptor;
 import com.xee.internal.service.AuthService;
 import com.xee.internal.service.CarsService;
+import com.xee.internal.service.DevicesService;
 import com.xee.internal.service.TripsService;
 import com.xee.internal.service.UsersService;
 
@@ -104,6 +107,7 @@ public class Xee {
     private UsersService usersService;
     private CarsService carsService;
     private TripsService tripsService;
+    private DevicesService devicesService;
 
     /**
      * Allows to serialize and deserialize a Date and format it
@@ -243,6 +247,7 @@ public class Xee {
         usersService = apiRetrofit.create(UsersService.class);
         carsService = apiRetrofit.create(CarsService.class);
         tripsService = apiRetrofit.create(TripsService.class);
+        devicesService = apiRetrofit.create(DevicesService.class);
     }
 
     //region AUTH
@@ -374,6 +379,7 @@ public class Xee {
             usersService = null;
             carsService = null;
             tripsService = null;
+            devicesService = null;
             xeeEnv.tokenStorage.dump();
             if (disconnectCallback != null) {
                 disconnectCallback.onSuccess();
@@ -420,6 +426,41 @@ public class Xee {
             throw CONNECTION_EXCEPTION;
         }
         return new XeeRequest<>(usersService.getCars());
+    }
+
+    /**
+     * Create a car for a user specified by its id
+     *
+     * @param userId the id of the user you are looking for the cars
+     * @return a {@code XeeRequest<Car>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/users/cars_create.md" target="_blank">User API</a>
+     */
+    public XeeRequest<Car> createCar(@NonNull String userId, @NonNull Map<String, Object> carInfo) {
+        if (usersService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        // check if fields "make" and "model" aren't filled, then put a default value "generic"
+        if (!carInfo.containsKey("make")) {
+            carInfo.put("make", "generic");
+        }
+        if (!carInfo.containsKey("model")) {
+            carInfo.put("model", "generic");
+        }
+        return new XeeRequest<>(usersService.createCar(userId, carInfo));
+    }
+
+    /**
+     * Get devices from a user
+     *
+     * @param userId the id of the user you are looking for the devices
+     * @return a {@code XeeRequest<List<Device>>}
+     */
+    public XeeRequest<List<Device>> getDevices(@NonNull String userId) {
+        if (usersService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+
+        return new XeeRequest<>(usersService.getDevices(userId));
     }
 
     //endregion
@@ -795,6 +836,54 @@ public class Xee {
 
         initAuthServices(xeeEnv);
         initApiServices();
+    }
+
+    //endregion
+
+    //region DEVICE
+
+    /**
+     * Associate a user and a device specified by its deviceId
+     *
+     * @param deviceId the id of the device you want to associate
+     * @param pin      the pin code of the device to associate with the current user
+     * @return a {@code XeeRequest<Void>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/devices/associate_user.md" target="_blank">Device API</a>
+     */
+    public XeeRequest<Void> associateUserWithDevice(@Size(value = 10) @NonNull String deviceId, @Size(value = 4) @NonNull String pin) {
+        if (devicesService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        return new XeeRequest<>(devicesService.associateUserWithDevice(deviceId, pin));
+    }
+
+    /**
+     * Associate a car and a device specified by its deviceId
+     *
+     * @param deviceId the id of the device you want to associate
+     * @param carId    the id of the car you want to associate with the current user
+     * @return a {@code XeeRequest<Void>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/devices/associate_car.md" target="_blank">Device API</a>
+     */
+    public XeeRequest<Void> associateCarWithDevice(@Size(value = 10) @NonNull String deviceId, @NonNull String carId) {
+        if (devicesService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        return new XeeRequest<>(devicesService.associateCarWithDevice(deviceId, carId));
+    }
+
+    /**
+     * Dissociate the device specified by its deviceId and the car
+     *
+     * @param deviceId the id of the device you want to dissociate
+     * @return a {@code XeeRequest<Void>}
+     * @see <a href="https://github.com/xee-lab/xee-api-docs/blob/master/api/api/v3/devices/dissociate.md" target="_blank">Device API</a>
+     */
+    public XeeRequest<Void> dissociate(@Size(value = 10) @NonNull String deviceId) {
+        if (devicesService == null) {
+            throw CONNECTION_EXCEPTION;
+        }
+        return new XeeRequest<>(devicesService.dissociate(deviceId));
     }
 
     //endregion
