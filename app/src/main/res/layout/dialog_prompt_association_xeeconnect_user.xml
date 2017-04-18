@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dialog_prompt_padding">
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/img_xeeconnect"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
+        />
+
+    <TextView
+        android:id="@+id/dialog_prompt_title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/prompt_dialog_associate_user_with_device"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <EditText
+        android:id="@+id/xeeconnect_id_dialog_prompt_edit_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/prompt_dialog_hint_enter_xeeconnect_id"
+        android:maxLines="1"
+        android:inputType="textFilter"
+        android:digits="Ee0123456789"
+        android:paddingTop="@dimen/dialog_prompt_padding"
+        />
+
+    <EditText
+        android:id="@+id/xeeconnect_pin_dialog_prompt_edit_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/prompt_dialog_hint_enter_xeeconnect_pin"
+        android:maxLines="1"
+        android:inputType="number"
+        android:paddingTop="@dimen/dialog_prompt_padding"
+        />
+</LinearLayout>
