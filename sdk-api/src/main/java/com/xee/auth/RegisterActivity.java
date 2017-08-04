@@ -122,6 +122,20 @@ public class RegisterActivity extends Activity {
         private boolean doesUrlContainsCode(WebView view, String url) {
             // Check if there is an access denied error
             Uri realUrl = Uri.parse(url);
+            if(!realUrl.isHierarchical()) {
+                if(url.startsWith("mailto:")){
+                    Intent i = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
+                    startActivity(i);
+                    return true;
+                }
+            }
+
+            if(url.endsWith(".pdf")) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, realUrl);
+                startActivity(browserIntent);
+                return true;
+            }
+
             String errorCode = realUrl.getQueryParameter(ERROR_CODE);
             final String accessCode = realUrl.getQueryParameter(ACCESS_CODE);
             if (errorCode != null && !errorCode.isEmpty()) {
@@ -184,6 +198,7 @@ public class RegisterActivity extends Activity {
         // Create the WebView with the custom client
         registerWebView = new WebView(this);
         registerWebView.setWebViewClient(mmRegisterWebViewClient);
+        registerWebView.getSettings().setJavaScriptEnabled(true);
         registerWebView.clearCache(true);
         disableRememberPasswordDialog(registerWebView);
 
