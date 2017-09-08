@@ -26,6 +26,7 @@ import android.os.Parcelable;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -37,7 +38,7 @@ import com.xee.api.Xee;
 
 import java.lang.ref.WeakReference;
 
-public final class SignInButton extends Button {
+public final class SignInButton extends AppCompatButton {
 
     private int mSizeIcon;
     private int mSizeNormal;
@@ -155,7 +156,7 @@ public final class SignInButton extends Button {
             case 0:
                 mDrawable = ContextCompat.getDrawable(getContext(), R.drawable.xee_auth_btn_logo_black);
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    setBackgroundTintList(getContext().getResources().getColorStateList(R.color.sign_in_button_bg_white, null));
+                    setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.sign_in_button_bg_white));
                 } else {
                     setBackground(ContextCompat.getDrawable(getContext(), R.drawable.xee_auth_btn_bg_white));
                 }
@@ -164,7 +165,7 @@ public final class SignInButton extends Button {
             case 1:
                 mDrawable = ContextCompat.getDrawable(getContext(), R.drawable.xee_auth_btn_logo_white);
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    setBackgroundTintList(getContext().getResources().getColorStateList(R.color.sign_in_button_bg_grey, null));
+                    setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.sign_in_button_bg_grey));
                 } else {
                     setBackground(ContextCompat.getDrawable(getContext(), R.drawable.xee_auth_btn_bg_grey));
                 }
@@ -173,7 +174,7 @@ public final class SignInButton extends Button {
             case 2:
                 mDrawable = ContextCompat.getDrawable(getContext(), R.drawable.xee_auth_btn_logo_white);
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    setBackgroundTintList(getContext().getResources().getColorStateList(R.color.sign_in_button_bg_green, null));
+                    setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.sign_in_button_bg_green));
                 } else {
                     setBackground(ContextCompat.getDrawable(getContext(), R.drawable.xee_auth_btn_bg_green));
                 }
