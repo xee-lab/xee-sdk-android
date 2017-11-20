@@ -4,6 +4,9 @@
 [![Release 3.3.2](https://img.shields.io/badge/Version-3.3.2-green.svg)](https://github.com/xee-lab/xee-sdk-android/releases/tag/3.3.2)
 [![License Apache](https://img.shields.io/badge/License-Apache%202-blue.svg)](./LICENSE)
 
+### This SDK is now DEPRECATED!
+### Please use the new one at [https://github.com/xee-lab/sdk-android](https://github.com/xee-lab/sdk-android) which is based on our new API V4.
+
 ## Purpose
 
 This SDK make easier the usage of [Xee API](https://dev.xee.com/) on [Android devices](https://developer.android.com) !
